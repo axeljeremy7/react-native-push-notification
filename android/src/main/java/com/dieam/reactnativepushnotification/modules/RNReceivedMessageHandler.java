@@ -40,16 +40,15 @@ public class RNReceivedMessageHandler {
     public void handleReceivedMessage(RemoteMessage message) {
         String from = message.getFrom();
         RemoteMessage.Notification remoteNotification = message.getNotification();
-
-        Log.v(LOG_TAG, "remoteNotification: " + remoteNotification.toString());
-        Log.v(LOG_TAG, "remoteNotification body: " + remoteNotification.getBody());
-        Log.v(LOG_TAG, "remoteNotification title: " + remoteNotification.getTitle());
-        Log.v(LOG_TAG, "remoteNotification channelId: " + remoteNotification.getChannelId());
-
         final Bundle bundle = new Bundle();
         // Putting it from remoteNotification first so it can be overriden if message
         // data has it
         if (remoteNotification != null) {
+
+            Log.v(LOG_TAG, "remoteNotification: " + remoteNotification.toString());
+            Log.v(LOG_TAG, "remoteNotification body: " + remoteNotification.getBody());
+            Log.v(LOG_TAG, "remoteNotification title: " + remoteNotification.getTitle());
+            Log.v(LOG_TAG, "remoteNotification channelId: " + remoteNotification.getChannelId());
             // ^ It's null when message is from GCM
             RNPushNotificationConfig config = new RNPushNotificationConfig(mFirebaseMessagingService.getApplication());  
 
@@ -119,8 +118,10 @@ public class RNReceivedMessageHandler {
 
         Bundle dataBundle = new Bundle();
         Map<String, String> notificationData = message.getData();
-        
+
         for(Map.Entry<String, String> entry : notificationData.entrySet()) {
+            Log.v(LOG_TAG, "notificationData getKey: " +  entry.getKey());
+            Log.v(LOG_TAG, "notificationData getValue: " +  entry.getValue());
             dataBundle.putString(entry.getKey(), entry.getValue());
         }
 
