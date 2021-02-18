@@ -126,7 +126,24 @@ public class RNReceivedMessageHandler {
             Log.v(LOG_TAG, "notificationData getKey: " + entry.getKey());
             Log.v(LOG_TAG, "notificationData getValue: " + entry.getValue());
             dataBundle.putString(entry.getKey(), entry.getValue());
+            if(dataBundle.containsKey("twi_body")){
+                dataBundle.putString("'message'", entry.getValue());
+            }
+            if (dataBundle.containsKey("channel_title")){
+                dataBundle.putString("'title'", entry.getValue());
+            }
+            if(dataBundle.containsKey("twi_sound")){
+//                bundle.putString("sound", entry.getValue());
+                bundle.putString("sound", "default");
+            }
+//            bundle.putString("color", remoteNotification.getColor());
+            if (dataBundle.containsKey("channel_id")){
+                dataBundle.putString("tag", entry.getValue());
+                dataBundle.putString("channelId", entry.getValue());
+            }
         }
+        dataBundle.putString("visibility", "public");
+        dataBundle.putString("priority", "max");
 
         bundle.putParcelable("data", dataBundle);
 
