@@ -127,10 +127,10 @@ public class RNReceivedMessageHandler {
             Log.v(LOG_TAG, "notificationData getValue: " + entry.getValue());
             dataBundle.putString(entry.getKey(), entry.getValue());
             if(dataBundle.containsKey("twi_body")){
-                dataBundle.putString("'message'", entry.getValue());
+                dataBundle.putString("message", entry.getValue());
             }
             if (dataBundle.containsKey("channel_title")){
-                dataBundle.putString("'title'", entry.getValue());
+                dataBundle.putString("title", entry.getValue());
             }
             if(dataBundle.containsKey("twi_sound")){
 //                bundle.putString("sound", entry.getValue());
