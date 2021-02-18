@@ -40,6 +40,12 @@ public class RNReceivedMessageHandler {
     public void handleReceivedMessage(RemoteMessage message) {
         String from = message.getFrom();
         RemoteMessage.Notification remoteNotification = message.getNotification();
+
+        Log.v(LOG_TAG, "remoteNotification: " + remoteNotification.toString());
+        Log.v(LOG_TAG, "remoteNotification body: " + remoteNotification.getBody());
+        Log.v(LOG_TAG, "remoteNotification title: " + remoteNotification.getTitle());
+        Log.v(LOG_TAG, "remoteNotification channelId: " + remoteNotification.getChannelId());
+
         final Bundle bundle = new Bundle();
         // Putting it from remoteNotification first so it can be overriden if message
         // data has it
@@ -187,7 +193,7 @@ public class RNReceivedMessageHandler {
         if(text != null) {
           return text;
         }
-
+        Log.v(LOG_TAG, "getLocalizedString text: " + text);
         Context context = mFirebaseMessagingService.getApplicationContext();
         String packageName = context.getPackageName();
 
@@ -203,7 +209,7 @@ public class RNReceivedMessageHandler {
                 }
             }
         }
-
+        Log.v(LOG_TAG, "getLocalizedString result: " + result);
         return result;
     }
 }

@@ -17,6 +17,8 @@ let NotificationsComponent = function() {
 NotificationsComponent.prototype.getInitialNotification = function () {
     return RNPushNotification.getInitialNotification()
         .then(function (notification) {
+		
+			console.log({notification});
             if (notification && notification.dataJSON) {
                 return JSON.parse(notification.dataJSON);
             }
@@ -73,6 +75,7 @@ NotificationsComponent.prototype.addEventListener = function(type, handler) {
 		listener =  DeviceEventEmitter.addListener(
 			DEVICE_NOTIF_EVENT,
 			function(notifData) {
+				console.log({event: DEVICE_NOTIF_EVENT, notifData});
 				if (notifData && notifData.dataJSON) {
 					let data = JSON.parse(notifData.dataJSON);
 					handler(data);
@@ -90,6 +93,7 @@ NotificationsComponent.prototype.addEventListener = function(type, handler) {
 		listener = DeviceEventEmitter.addListener(
 			REMOTE_FETCH_EVENT,
 			function(notifData) {
+				console.log({event: REMOTE_FETCH_EVENT, notifData});
 				if (notifData && notifData.dataJSON) {
 					let notificationData = JSON.parse(notifData.dataJSON)
 					handler(notificationData);
