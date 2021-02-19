@@ -39,7 +39,7 @@ public class RNReceivedMessageHandler {
     }
 
     public void handleReceivedMessage(RemoteMessage message) {
-        Log.v(LOG_TAG, "handleReceivedMessage()");
+        Log.w(LOG_TAG, "handleReceivedMessage()");
         String from = message.getFrom();
         RemoteMessage.Notification remoteNotification = message.getNotification();
         final Bundle bundle = new Bundle();
@@ -47,10 +47,10 @@ public class RNReceivedMessageHandler {
         // data has it
         if (remoteNotification != null) {
 
-            Log.v(LOG_TAG, "remoteNotification: " + remoteNotification.toString());
-            Log.v(LOG_TAG, "remoteNotification body: " + remoteNotification.getBody());
-            Log.v(LOG_TAG, "remoteNotification title: " + remoteNotification.getTitle());
-            Log.v(LOG_TAG, "remoteNotification channelId: " + remoteNotification.getChannelId());
+            Log.w(LOG_TAG, "remoteNotification: " + remoteNotification.toString());
+            Log.w(LOG_TAG, "remoteNotification body: " + remoteNotification.getBody());
+            Log.w(LOG_TAG, "remoteNotification title: " + remoteNotification.getTitle());
+            Log.w(LOG_TAG, "remoteNotification channelId: " + remoteNotification.getChannelId());
             // ^ It's null when message is from GCM
             RNPushNotificationConfig config = new RNPushNotificationConfig(mFirebaseMessagingService.getApplication());
 
@@ -116,15 +116,15 @@ public class RNReceivedMessageHandler {
                 bundle.putString("largeIconUrl", imageUrl);
             }
         } else {
-            Log.v(LOG_TAG, "remoteNotification is null: ");
+            Log.w(LOG_TAG, "remoteNotification is null: ");
         }
 
         Bundle dataBundle = new Bundle();
         Map<String, String> notificationData = message.getData();
 
         for (Map.Entry<String, String> entry : notificationData.entrySet()) {
-            Log.v(LOG_TAG, "notificationData getKey: " + entry.getKey());
-            Log.v(LOG_TAG, "notificationData getValue: " + entry.getValue());
+            Log.w(LOG_TAG, "notificationData getKey: " + entry.getKey());
+            Log.w(LOG_TAG, "notificationData getValue: " + entry.getValue());
             dataBundle.putString(entry.getKey(), entry.getValue());
             if(dataBundle.containsKey("twi_body")){
                 dataBundle.putString("message", entry.getValue());
@@ -144,10 +144,11 @@ public class RNReceivedMessageHandler {
         }
         dataBundle.putString("visibility", "public");
         dataBundle.putString("priority", "max");
+//        dataBundle.putString("group", "0");
 
         bundle.putParcelable("data", dataBundle);
 
-        Log.v(LOG_TAG, "onMessageReceived bundle: " + bundle);
+        Log.w(LOG_TAG, "onMessageReceived bundle: " + bundle);
 
         // We need to run this on the main thread, as the React code assumes that is true.
         // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
@@ -160,9 +161,10 @@ public class RNReceivedMessageHandler {
                 ReactContext context = mReactInstanceManager.getCurrentReactContext();
                 // If it's constructed, send a notification
                 if (context != null) {
+                    Log.w(LOG_TAG, "context is not null");
                     handleRemotePushNotification((ReactApplicationContext) context, bundle);
                 } else {
-                    Log.v(LOG_TAG, "context is null");
+                    Log.w(LOG_TAG, "context is null");
                     // Otherwise wait for construction, then send the notification
                     mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                         public void onReactContextInitialized(ReactContext context) {
@@ -181,7 +183,7 @@ public class RNReceivedMessageHandler {
 
     private void handleRemotePushNotification(ReactApplicationContext context, Bundle bundle) {
 
-        Log.v(LOG_TAG, "handleRemotePushNotification()");
+        Log.w(LOG_TAG, "handleRemotePushNotification()");
         // If notification ID is not provided by the user for push notification, generate one at random
         if (bundle.getString("id") == null) {
             SecureRandom randomNumberGenerator = new SecureRandom();
@@ -194,21 +196,21 @@ public class RNReceivedMessageHandler {
         RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
 
         boolean isForeground = pushNotificationHelper.isApplicationInForeground();
-        Log.v(LOG_TAG, "handleRemotePushNotification() isForeground: " + Boolean.toString(isForeground));
+        Log.w(LOG_TAG, "handleRemotePushNotification() isForeground: " + Boolean.toString(isForeground));
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
         bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
-        Log.v(LOG_TAG, "notifyNotification: " + bundle);
+        Log.w(LOG_TAG, "notifyNotification: " + bundle);
         jsDelivery.notifyNotification(bundle);
 
         // If contentAvailable is set to true, then send out a remote fetch event
         if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
-            Log.v(LOG_TAG, "notifyRemoteFetch: " + bundle);
+            Log.w(LOG_TAG, "notifyRemoteFetch: " + bundle);
             jsDelivery.notifyRemoteFetch(bundle);
         }
 
         if (config.getNotificationForeground() || !isForeground) {
-            Log.v(LOG_TAG, "sendToNotificationCentre: " + bundle);
+            Log.w(LOG_TAG, "sendToNotificationCentre: " + bundle);
             pushNotificationHelper.sendToNotificationCentre(bundle);
         }
     }
@@ -217,7 +219,7 @@ public class RNReceivedMessageHandler {
         if (text != null) {
             return text;
         }
-        Log.v(LOG_TAG, "getLocalizedString text: " + text);
+        Log.w(LOG_TAG, "getLocalizedString text: " + text);
         Context context = mFirebaseMessagingService.getApplicationContext();
         String packageName = context.getPackageName();
 
@@ -233,7 +235,7 @@ public class RNReceivedMessageHandler {
                 }
             }
         }
-        Log.v(LOG_TAG, "getLocalizedString result: " + result);
+        Log.w(LOG_TAG, "getLocalizedString result: " + result);
         return result;
     }
 }
