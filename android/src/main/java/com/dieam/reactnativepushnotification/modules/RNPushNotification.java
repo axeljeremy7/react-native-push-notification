@@ -246,9 +246,9 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
      */
     public void clearLocalNotification(String tag, int notificationID) {
         try {
-            Log.w(LOG_TAG, "clearLocalNotification()");
-            Log.w(LOG_TAG, "tag:" + tag);
-            Log.w(LOG_TAG, "notificationID: " + notificationID);
+            Log.d(LOG_TAG, "clearLocalNotification()");
+            Log.d(LOG_TAG, "tag:" + tag);
+            Log.d(LOG_TAG, "notificationID: " + notificationID);
             mRNPushNotificationHelper.clearNotification(tag, notificationID);
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage());

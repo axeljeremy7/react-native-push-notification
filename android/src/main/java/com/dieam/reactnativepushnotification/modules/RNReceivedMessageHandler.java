@@ -41,18 +41,17 @@ public class RNReceivedMessageHandler {
     }
 
     public void handleReceivedMessage(RemoteMessage message) {
-        Log.w(LOG_TAG, "handleReceivedMessage()");
+        Log.d(LOG_TAG, "handleReceivedMessage()");
         String from = message.getFrom();
         RemoteMessage.Notification remoteNotification = message.getNotification();
         final Bundle bundle = new Bundle();
         // Putting it from remoteNotification first so it can be overridden if message
         // data has it
         if (remoteNotification != null) {
-
-            Log.w(LOG_TAG, "remoteNotification: " + remoteNotification.toString());
-            Log.w(LOG_TAG, "remoteNotification body: " + remoteNotification.getBody());
-            Log.w(LOG_TAG, "remoteNotification title: " + remoteNotification.getTitle());
-            Log.w(LOG_TAG, "remoteNotification channelId: " + remoteNotification.getChannelId());
+            Log.d(LOG_TAG, "remoteNotification: " + remoteNotification.toString());
+            Log.d(LOG_TAG, "remoteNotification body: " + remoteNotification.getBody());
+            Log.d(LOG_TAG, "remoteNotification title: " + remoteNotification.getTitle());
+            Log.d(LOG_TAG, "remoteNotification channelId: " + remoteNotification.getChannelId());
             // ^ It's null when message is from GCM
             RNPushNotificationConfig config = new RNPushNotificationConfig(mFirebaseMessagingService.getApplication());
 
@@ -118,15 +117,15 @@ public class RNReceivedMessageHandler {
                 bundle.putString("largeIconUrl", imageUrl);
             }
         } else {
-            Log.w(LOG_TAG, "remoteNotification is null: ");
+            Log.d(LOG_TAG, "remoteNotification is null: ");
         }
 
         Bundle dataBundle = new Bundle();
         Map<String, String> notificationData = message.getData();
 
         for (Map.Entry<String, String> entry : notificationData.entrySet()) {
-            Log.w(LOG_TAG, "notificationData getKey: " + entry.getKey());
-            Log.w(LOG_TAG, "notificationData getValue: " + entry.getValue());
+            Log.d(LOG_TAG, "notificationData getKey: " + entry.getKey());
+            Log.d(LOG_TAG, "notificationData getValue: " + entry.getValue());
             dataBundle.putString(entry.getKey(), entry.getValue());
             if (entry.getKey().equalsIgnoreCase("twi_body")) {
                 dataBundle.putString("message", entry.getValue());
@@ -146,7 +145,6 @@ public class RNReceivedMessageHandler {
                 bundle.putString("channelId", entry.getValue());
                 bundle.putString("channelSid", entry.getValue());
                 dataBundle.putString("channelSid", entry.getValue());
-
             } else if (entry.getKey().equalsIgnoreCase("message_index")) {
                 dataBundle.putString("id", entry.getValue());
                 bundle.putString("id", entry.getValue());
@@ -157,15 +155,12 @@ public class RNReceivedMessageHandler {
         }
         bundle.putString("visibility", "public");
         bundle.putString("priority", "max");
-//        bundle.putString("group", entry.getValue());
         bundle.putInt("group", 0);
-//        SecureRandom randomNumberGenerator = new SecureRandom();
-//        dataBundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
 
         bundle.putParcelable("data", dataBundle);
 
-        Log.w(LOG_TAG, "dataBundle:" + dataBundle);
-        Log.w(LOG_TAG, "onMessageReceived bundle: " + bundle);
+        Log.v(LOG_TAG, "dataBundle:" + dataBundle);
+        Log.v(LOG_TAG, "onMessageReceived bundle: " + bundle);
 
         // We need to run this on the main thread, as the React code assumes that is true.
         // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
@@ -178,10 +173,10 @@ public class RNReceivedMessageHandler {
                 ReactContext context = mReactInstanceManager.getCurrentReactContext();
                 // If it's constructed, send a notification
                 if (context != null) {
-                    Log.w(LOG_TAG, "context is not null");
+                    Log.d(LOG_TAG, "context is not null");
                     handleRemotePushNotification((ReactApplicationContext) context, bundle);
                 } else {
-                    Log.w(LOG_TAG, "context is null");
+                    Log.d(LOG_TAG, "context is null");
                     // Otherwise wait for construction, then send the notification
                     mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                         public void onReactContextInitialized(ReactContext context) {
@@ -200,14 +195,14 @@ public class RNReceivedMessageHandler {
 
     private void handleRemotePushNotification(ReactApplicationContext context, Bundle bundle) {
 
-        Log.w(LOG_TAG, "handleRemotePushNotification()");
+        Log.d(LOG_TAG, "handleRemotePushNotification()");
         // If notification ID is not provided by the user for push notification, generate one at random
         if (bundle.getString("id") == null) {
-            Log.w(LOG_TAG, "bundle.getString() is null");
+            Log.d(LOG_TAG, "bundle.getString() is null");
             SecureRandom randomNumberGenerator = new SecureRandom();
             bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
         } else {
-            Log.w(LOG_TAG, "bundle.getString() is not null");
+            Log.d(LOG_TAG, "bundle.getString() is not null");
         }
 
         Application applicationContext = (Application) context.getApplicationContext();
@@ -216,54 +211,20 @@ public class RNReceivedMessageHandler {
         RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
 
         boolean isForeground = pushNotificationHelper.isApplicationInForeground();
-        Log.w(LOG_TAG, "handleRemotePushNotification() isForeground: " + Boolean.toString(isForeground));
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
         bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
-        Log.w(LOG_TAG, "notifyNotification: " + bundle);
-
-        if (bundle.containsKey("message")) {
-            Log.w(LOG_TAG, "#1 notifyNotification has message key");
-        }
-
-
-        Object message = bundle.getString("message");
-        Object message2 = bundle.get("message");
-        Log.w(LOG_TAG, "notifyNotification message: " + message);
-        Log.w(LOG_TAG, "notifyNotification message2: " + message2);
-        Object[] keySet = bundle.keySet().toArray();
-        for (int i = 0; i < keySet.length; i++) {
-            Log.w(LOG_TAG, "notifyNotification keySet " + keySet[i]);
-        }
-        Set<String> keys = bundle.keySet();
-        for (String key : keys) {
-            Object value = bundle.get(key);
-            Log.w(LOG_TAG, "keySet key " + key);
-            Log.w(LOG_TAG, "keySet value " + value);
-        }
-        if (bundle.getString("message") == null) {
-            // this happens when a 'data' notification is received - we do not synthesize a local notification in this case
-            Log.d(LOG_TAG, "#1 Ignore this message if you sent data-only notification. Cannot send to notification centre because there is no 'message' field in: " + bundle);
-        } else {
-            Log.w(LOG_TAG, "#1 notifyNotification message  not null");
-        }
-        if (bundle.get("message") == null) {
-            // this happens when a 'data' notification is received - we do not synthesize a local notification in this case
-            Log.d(LOG_TAG, "#2  Ignore this message if you sent data-only notification. Cannot send to notification centre because there is no 'message' field in: " + bundle);
-        } else {
-            Log.w(LOG_TAG, "#2 notifyNotification message not null ");
-        }
-
+        Log.v(LOG_TAG, "notifyNotification bundle " + bundle);
         jsDelivery.notifyNotification(bundle);
 
         // If contentAvailable is set to true, then send out a remote fetch event
         if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
-            Log.w(LOG_TAG, "notifyRemoteFetch: " + bundle);
+//            Log.d(LOG_TAG, "notifyRemoteFetch: " + bundle);
             jsDelivery.notifyRemoteFetch(bundle);
         }
 
         if (config.getNotificationForeground() || !isForeground) {
-            Log.w(LOG_TAG, "sendToNotificationCentre: " + bundle);
+//            Log.d(LOG_TAG, "sendToNotificationCentre: " + bundle);
             pushNotificationHelper.sendToNotificationCentre(bundle);
         }
     }
@@ -272,7 +233,7 @@ public class RNReceivedMessageHandler {
         if (text != null) {
             return text;
         }
-        Log.w(LOG_TAG, "getLocalizedString text: " + text);
+//        Log.d(LOG_TAG, "getLocalizedString text: " + text);
         Context context = mFirebaseMessagingService.getApplicationContext();
         String packageName = context.getPackageName();
 
@@ -288,7 +249,7 @@ public class RNReceivedMessageHandler {
                 }
             }
         }
-        Log.w(LOG_TAG, "getLocalizedString result: " + result);
+//        Log.d(LOG_TAG, "getLocalizedString result: " + result);
         return result;
     }
 }
