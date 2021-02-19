@@ -203,20 +203,32 @@ public class RNReceivedMessageHandler {
         bundle.putBoolean("userInteraction", false);
         Log.w(LOG_TAG, "notifyNotification: " + bundle);
 
+       if( bundle.containsKey("message")){
+           Log.w(LOG_TAG, "#1 notifyNotification has message key");
+       }
 
 
+
+        Object message = bundle.getString("message");
+        Object message2 = bundle.get("message");
+        Object message3 = bundle.getShort("message");
+        bundle.keySet().toArray();
+        Log.w(LOG_TAG, "#1 notifyNotification message: " + message);
+        Log.w(LOG_TAG, "#2 notifyNotification message: " + message2);
+        Log.w(LOG_TAG, "#2 notifyNotification message: " + message3);
+        Log.w(LOG_TAG, "#2 notifyNotification keySet " + bundle.keySet().toArray().toString());
         if (bundle.getString("message") == null) {
+
             // this happens when a 'data' notification is received - we do not synthesize a local notification in this case
             Log.d(LOG_TAG, "#1 Ignore this message if you sent data-only notification. Cannot send to notification centre because there is no 'message' field in: " + bundle);
         }else{
-            Log.w(LOG_TAG, "#1 notifyNotification message: " + bundle.getString("message"));
+            Log.w(LOG_TAG, "#1 notifyNotification message  not null");
         }
         if (bundle.get("message") == null) {
             // this happens when a 'data' notification is received - we do not synthesize a local notification in this case
             Log.d(LOG_TAG, "#2  Ignore this message if you sent data-only notification. Cannot send to notification centre because there is no 'message' field in: " + bundle);
         }else{
-            String message = bundle.get("message").toString();
-            Log.w(LOG_TAG, "#2 notifyNotification message: " + message);
+            Log.w(LOG_TAG, "#2 notifyNotification message not null ");
         }
 
         jsDelivery.notifyNotification(bundle);
