@@ -163,7 +163,8 @@ public class RNReceivedMessageHandler {
         bundle.putParcelable("data", dataBundle);
 
         Log.v(LOG_TAG, "dataBundle:" + dataBundle);
-        Log.v(LOG_TAG, "onMessageReceived bundle: " + bundle);
+        Log.v(LOG_TAG, "bundle: " + bundle);
+//        Log.v(LOG_TAG, "onMessageReceived: " + bundle);
 
         // We need to run this on the main thread, as the React code assumes that is true.
         // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
