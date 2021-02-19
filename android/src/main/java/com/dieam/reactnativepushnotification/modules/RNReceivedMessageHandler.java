@@ -138,21 +138,25 @@ public class RNReceivedMessageHandler {
 //                bundle.putString("sound", entry.getValue());
                 dataBundle.putString("sound", "default");
                 bundle.putString("sound", "default");
-            }
-//            bundle.putString("color", remoteNotification.getColor());
-            else if (entry.getKey().equalsIgnoreCase("channel_id")) {
+//                bundle.putString("color", remoteNotification.getColor());
+            } else if (entry.getKey().equalsIgnoreCase("channel_id")) {
                 dataBundle.putString("tag", entry.getValue());
                 dataBundle.putString("channelId", entry.getValue());
                 bundle.putString("tag", entry.getValue());
                 bundle.putString("channelId", entry.getValue());
+                bundle.putString("channelSid", entry.getValue());
+                dataBundle.putString("channelSid", entry.getValue());
             } else if (entry.getKey().equalsIgnoreCase("message_index")) {
                 dataBundle.putString("id", entry.getValue());
                 bundle.putString("id", entry.getValue());
+            } else if (entry.getKey().equalsIgnoreCase("message_id")) {
+                dataBundle.putString("messageSid", entry.getValue());
+                bundle.putString("messageSid", entry.getValue());
             }
         }
         bundle.putString("visibility", "public");
         bundle.putString("priority", "max");
-//        dataBundle.putString("group", "0");
+        bundle.putString("group", "0");
 //        SecureRandom randomNumberGenerator = new SecureRandom();
 //        dataBundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
 
