@@ -156,6 +156,7 @@ public class RNReceivedMessageHandler {
         bundle.putString("visibility", "public");
         bundle.putString("priority", "max");
         bundle.putInt("group", 0);
+        bundle.putBoolean("groupSummary", true);
 
         bundle.putParcelable("data", dataBundle);
 
