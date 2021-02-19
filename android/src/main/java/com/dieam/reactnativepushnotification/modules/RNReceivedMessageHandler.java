@@ -212,10 +212,8 @@ public class RNReceivedMessageHandler {
 
         Object message = bundle.getString("message");
         Object message2 = bundle.get("message");
-        Object message3 = bundle.getShort("message");
         Log.w(LOG_TAG, "notifyNotification message: " + message);
         Log.w(LOG_TAG, "notifyNotification message2: " + message2);
-        Log.w(LOG_TAG, "notifyNotification message3: " + message3);
         Object[] keySet = bundle.keySet().toArray();
         for (int i = 0; i < keySet.length; i++) {
             Log.w(LOG_TAG, "notifyNotification keySet " + keySet[i]);
