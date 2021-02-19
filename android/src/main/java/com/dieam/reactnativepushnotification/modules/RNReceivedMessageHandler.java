@@ -6,6 +6,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import android.os.Looper;
 import android.content.Context;
 import android.util.Log;
 import android.net.Uri;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -215,7 +217,24 @@ public class RNReceivedMessageHandler {
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
         bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
-        Log.v(LOG_TAG, "notifyNotification bundle " + bundle);
+        Log.v(LOG_TAG, "bundle " + bundle);
+
+        try {
+            ReactContext reactContext = getReactApplicationContext();
+            SharedPreferences sharedPreferences = reactContext.getSharedPreferences("dsp", Context.MODE_PRIVATE);
+            Log.v(LOG_TAG, "notifyNotification bundle " + sharedPreferences.toString());
+            Map<String, String> map = (Map<String, String>) sharedPreferences.getAll().values();
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                Log.v(LOG_TAG, "Key = " + entry.getKey() + ", Value = " + entry.getValue());
+            }
+            if (map.containsKey("activeChannel") && (map.get("activeChannel") != null) && map.get("activeChannel").length() >= 34) {
+                Log.v(LOG_TAG, "It contains and is full string : " + map.get("activeChannel"));
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "getSharedPreferences: " + e.getMessage());
+        }
+
+        Log.v(LOG_TAG, "notifyNotification()");
         jsDelivery.notifyNotification(bundle);
 
         // If contentAvailable is set to true, then send out a remote fetch event
