@@ -225,7 +225,7 @@ public class RNReceivedMessageHandler {
 //            Context context = mFirebaseMessagingService.getApplicationContext();
             SharedPreferences sharedPreferences =  context.getSharedPreferences("dsp", Context.MODE_PRIVATE);
             Log.v(LOG_TAG, "notifyNotification bundle " + sharedPreferences.toString());
-            Map<String, String> map = (Map<String, String>) sharedPreferences.getAll().values();
+            Map<String, String> map = (Map<String, String>) sharedPreferences.getAll();
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 Log.v(LOG_TAG, "Key = " + entry.getKey() + ", Value = " + entry.getValue());
             }
