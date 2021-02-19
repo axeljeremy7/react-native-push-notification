@@ -128,16 +128,14 @@ public class RNReceivedMessageHandler {
             dataBundle.putString(entry.getKey(), entry.getValue());
             if (entry.getKey().equalsIgnoreCase("twi_body")) {
                 dataBundle.putString("message", entry.getValue());
-            }
-            if (entry.getKey().equalsIgnoreCase("channel_title")) {
+            } else if (entry.getKey().equalsIgnoreCase("channel_title")) {
                 dataBundle.putString("title", entry.getValue());
-            }
-            if (entry.getKey().equalsIgnoreCase("twi_sound")) {
+            } else if (entry.getKey().equalsIgnoreCase("twi_sound")) {
 //                bundle.putString("sound", entry.getValue());
                 bundle.putString("sound", "default");
             }
 //            bundle.putString("color", remoteNotification.getColor());
-            if (entry.getKey().equalsIgnoreCase("channel_id")) {
+            else if (entry.getKey().equalsIgnoreCase("channel_id")) {
                 dataBundle.putString("tag", entry.getValue());
                 dataBundle.putString("channelId", entry.getValue());
             }
@@ -204,6 +202,23 @@ public class RNReceivedMessageHandler {
         bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
         Log.w(LOG_TAG, "notifyNotification: " + bundle);
+
+
+
+        if (bundle.getString("message") == null) {
+            // this happens when a 'data' notification is received - we do not synthesize a local notification in this case
+            Log.d(LOG_TAG, "#1 Ignore this message if you sent data-only notification. Cannot send to notification centre because there is no 'message' field in: " + bundle);
+        }else{
+            Log.w(LOG_TAG, "#1 notifyNotification message: " + bundle.getString("message"));
+        }
+        if (bundle.get("message") == null) {
+            // this happens when a 'data' notification is received - we do not synthesize a local notification in this case
+            Log.d(LOG_TAG, "#2  Ignore this message if you sent data-only notification. Cannot send to notification centre because there is no 'message' field in: " + bundle);
+        }else{
+            String message = bundle.get("message").toString();
+            Log.w(LOG_TAG, "#2 notifyNotification message: " + message);
+        }
+
         jsDelivery.notifyNotification(bundle);
 
         // If contentAvailable is set to true, then send out a remote fetch event

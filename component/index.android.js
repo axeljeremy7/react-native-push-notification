@@ -75,7 +75,7 @@ NotificationsComponent.prototype.addEventListener = function(type, handler) {
 		listener =  DeviceEventEmitter.addListener(
 			DEVICE_NOTIF_EVENT,
 			function(notifData) {
-				console.log({event: DEVICE_NOTIF_EVENT, notifData});
+				console.log({event: DEVICE_NOTIF_EVENT, notifData, type: 'notification'});
 				if (notifData && notifData.dataJSON) {
 					let data = JSON.parse(notifData.dataJSON);
 					handler(data);
@@ -93,7 +93,7 @@ NotificationsComponent.prototype.addEventListener = function(type, handler) {
 		listener = DeviceEventEmitter.addListener(
 			REMOTE_FETCH_EVENT,
 			function(notifData) {
-				console.log({event: REMOTE_FETCH_EVENT, notifData});
+				console.log({event: REMOTE_FETCH_EVENT, notifData, type: 'remoteFetch'});
 				if (notifData && notifData.dataJSON) {
 					let notificationData = JSON.parse(notifData.dataJSON)
 					handler(notificationData);
