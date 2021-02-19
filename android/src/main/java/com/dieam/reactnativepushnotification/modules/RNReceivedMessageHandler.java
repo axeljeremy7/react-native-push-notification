@@ -144,14 +144,17 @@ public class RNReceivedMessageHandler {
                 dataBundle.putString("tag", entry.getValue());
                 dataBundle.putString("channelId", entry.getValue());
                 bundle.putString("tag", entry.getValue());
-                bundle.putString("channelId",entry.getValue());
+                bundle.putString("channelId", entry.getValue());
+            } else if (entry.getKey().equalsIgnoreCase("message_index")) {
+                dataBundle.putString("id", entry.getValue());
+                bundle.putString("id", entry.getValue());
             }
         }
         bundle.putString("visibility", "public");
         bundle.putString("priority", "max");
 //        dataBundle.putString("group", "0");
-        SecureRandom randomNumberGenerator = new SecureRandom();
-        dataBundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
+//        SecureRandom randomNumberGenerator = new SecureRandom();
+//        dataBundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
 
         bundle.putParcelable("data", dataBundle);
 
