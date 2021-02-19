@@ -126,18 +126,18 @@ public class RNReceivedMessageHandler {
             Log.w(LOG_TAG, "notificationData getKey: " + entry.getKey());
             Log.w(LOG_TAG, "notificationData getValue: " + entry.getValue());
             dataBundle.putString(entry.getKey(), entry.getValue());
-            if(dataBundle.containsKey("twi_body")){
+            if (entry.getKey().equalsIgnoreCase("twi_body")) {
                 dataBundle.putString("message", entry.getValue());
             }
-            if (dataBundle.containsKey("channel_title")){
+            if (entry.getKey().equalsIgnoreCase("channel_title")) {
                 dataBundle.putString("title", entry.getValue());
             }
-            if(dataBundle.containsKey("twi_sound")){
+            if (entry.getKey().equalsIgnoreCase("twi_sound")) {
 //                bundle.putString("sound", entry.getValue());
                 bundle.putString("sound", "default");
             }
 //            bundle.putString("color", remoteNotification.getColor());
-            if (dataBundle.containsKey("channel_id")){
+            if (entry.getKey().equalsIgnoreCase("channel_id")) {
                 dataBundle.putString("tag", entry.getValue());
                 dataBundle.putString("channelId", entry.getValue());
             }
@@ -186,8 +186,11 @@ public class RNReceivedMessageHandler {
         Log.w(LOG_TAG, "handleRemotePushNotification()");
         // If notification ID is not provided by the user for push notification, generate one at random
         if (bundle.getString("id") == null) {
+            Log.w(LOG_TAG, "bundle.getString() is null");
             SecureRandom randomNumberGenerator = new SecureRandom();
             bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
+        } else {
+            Log.w(LOG_TAG, "bundle.getString() is not null");
         }
 
         Application applicationContext = (Application) context.getApplicationContext();
