@@ -130,24 +130,32 @@ public class RNReceivedMessageHandler {
             dataBundle.putString(entry.getKey(), entry.getValue());
             if (entry.getKey().equalsIgnoreCase("twi_body")) {
                 dataBundle.putString("message", entry.getValue());
+                bundle.putString("message", entry.getValue());
             } else if (entry.getKey().equalsIgnoreCase("channel_title")) {
                 dataBundle.putString("title", entry.getValue());
+                bundle.putString("title", entry.getValue());
             } else if (entry.getKey().equalsIgnoreCase("twi_sound")) {
 //                bundle.putString("sound", entry.getValue());
+                dataBundle.putString("sound", "default");
                 bundle.putString("sound", "default");
             }
 //            bundle.putString("color", remoteNotification.getColor());
             else if (entry.getKey().equalsIgnoreCase("channel_id")) {
                 dataBundle.putString("tag", entry.getValue());
                 dataBundle.putString("channelId", entry.getValue());
+                bundle.putString("tag", entry.getValue());
+                bundle.putString("channelId",entry.getValue());
             }
         }
-        dataBundle.putString("visibility", "public");
-        dataBundle.putString("priority", "max");
+        bundle.putString("visibility", "public");
+        bundle.putString("priority", "max");
 //        dataBundle.putString("group", "0");
+        SecureRandom randomNumberGenerator = new SecureRandom();
+        dataBundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
 
         bundle.putParcelable("data", dataBundle);
 
+        Log.w(LOG_TAG, "dataBundle:" + dataBundle);
         Log.w(LOG_TAG, "onMessageReceived bundle: " + bundle);
 
         // We need to run this on the main thread, as the React code assumes that is true.
