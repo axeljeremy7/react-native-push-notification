@@ -198,7 +198,6 @@ public class RNReceivedMessageHandler {
     }
 
     private void handleRemotePushNotification(ReactApplicationContext context, Bundle bundle) {
-
         Log.d(LOG_TAG, "handleRemotePushNotification()");
         // If notification ID is not provided by the user for push notification, generate one at random
         if (bundle.getString("id") == null) {
@@ -220,34 +219,37 @@ public class RNReceivedMessageHandler {
         bundle.putBoolean("userInteraction", false);
         Log.v(LOG_TAG, "bundle " + bundle);
 
+        boolean showNotification = true;
         try {
 //            ReactContext reactContext = getReactApplicationContext();
 //            Context context = mFirebaseMessagingService.getApplicationContext();
-            SharedPreferences sharedPreferences =  context.getSharedPreferences("dsp", Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = context.getSharedPreferences("dsp", Context.MODE_PRIVATE);
             Log.v(LOG_TAG, "notifyNotification bundle " + sharedPreferences.toString());
             Map<String, String> map = (Map<String, String>) sharedPreferences.getAll();
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 Log.v(LOG_TAG, "Key = " + entry.getKey() + ", Value = " + entry.getValue());
             }
-            if (map.containsKey("activeChannel") && (map.get("activeChannel") != null) && map.get("activeChannel").length() >= 34) {
-                Log.v(LOG_TAG, "It contains and is full string : " + map.get("activeChannel"));
+            Log.v(LOG_TAG, "activeChannel : " + map.get("activeChannel"));
+            Log.v(LOG_TAG, "channelSid : " + bundle.getString("channelSid"));
+            if (map.containsKey("activeChannel") && (map.get("activeChannel") != null) && map.get("activeChannel").equalsIgnoreCase(bundle.getString("channelSid"))) {
+                showNotification = false;
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "getSharedPreferences: " + e.getMessage());
         }
 
-        Log.v(LOG_TAG, "notifyNotification()");
-        jsDelivery.notifyNotification(bundle);
-
-        // If contentAvailable is set to true, then send out a remote fetch event
-        if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
-            Log.d(LOG_TAG, "notifyRemoteFetch()");
-            jsDelivery.notifyRemoteFetch(bundle);
-        }
-
-        if (config.getNotificationForeground() || !isForeground) {
-            Log.d(LOG_TAG, "sendToNotificationCentre()");
-            pushNotificationHelper.sendToNotificationCentre(bundle);
+        if (showNotification) {
+            Log.v(LOG_TAG, "notifyNotification()");
+            jsDelivery.notifyNotification(bundle);
+            // If contentAvailable is set to true, then send out a remote fetch event
+            if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
+                Log.d(LOG_TAG, "notifyRemoteFetch()");
+                jsDelivery.notifyRemoteFetch(bundle);
+            }
+            if (config.getNotificationForeground() || !isForeground) {
+                Log.d(LOG_TAG, "sendToNotificationCentre()");
+                pushNotificationHelper.sendToNotificationCentre(bundle);
+            }
         }
     }
 
