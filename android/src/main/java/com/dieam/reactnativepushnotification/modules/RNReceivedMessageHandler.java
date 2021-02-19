@@ -219,12 +219,12 @@ public class RNReceivedMessageHandler {
 
         // If contentAvailable is set to true, then send out a remote fetch event
         if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
-//            Log.d(LOG_TAG, "notifyRemoteFetch: " + bundle);
+            Log.d(LOG_TAG, "notifyRemoteFetch()");
             jsDelivery.notifyRemoteFetch(bundle);
         }
 
         if (config.getNotificationForeground() || !isForeground) {
-//            Log.d(LOG_TAG, "sendToNotificationCentre: " + bundle);
+            Log.d(LOG_TAG, "sendToNotificationCentre()");
             pushNotificationHelper.sendToNotificationCentre(bundle);
         }
     }
