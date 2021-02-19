@@ -221,8 +221,9 @@ public class RNReceivedMessageHandler {
         Log.v(LOG_TAG, "bundle " + bundle);
 
         try {
-            ReactContext reactContext = getReactApplicationContext();
-            SharedPreferences sharedPreferences = reactContext.getSharedPreferences("dsp", Context.MODE_PRIVATE);
+//            ReactContext reactContext = getReactApplicationContext();
+//            Context context = mFirebaseMessagingService.getApplicationContext();
+            SharedPreferences sharedPreferences =  context.getSharedPreferences("dsp", Context.MODE_PRIVATE);
             Log.v(LOG_TAG, "notifyNotification bundle " + sharedPreferences.toString());
             Map<String, String> map = (Map<String, String>) sharedPreferences.getAll().values();
             for (Map.Entry<String, String> entry : map.entrySet()) {
