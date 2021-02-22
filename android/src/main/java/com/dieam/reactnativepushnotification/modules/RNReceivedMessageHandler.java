@@ -219,11 +219,15 @@ public class RNReceivedMessageHandler {
             }
             if (bundle.getString("title") != null && bundle.getString("title").contains(identity) && bundle.getString("author") != null && bundle.getString("message") != null) {
                 String title = bundle.getString("author");
+                String message = "";
                 if (title == "system") {
                     title = "workplace_bot";
+                    message = bundle.getString("message").replace("system: ", "");
+                    bundle.putString("message", message);
+                } else {
+                    message = bundle.getString("message").replace(title + ": ", "");
+                    bundle.putString("message", message);
                 }
-                String message = bundle.getString("message").replace(title + ": ", "");
-                bundle.putString("message", message);
                 bundle.putString("title", title);
             }
         } catch (Exception e) {
