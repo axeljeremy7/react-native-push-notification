@@ -209,8 +209,8 @@ public class RNReceivedMessageHandler {
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 Log.v(LOG_TAG, "SharedPreferences => Key = " + entry.getKey() + ", Value = " + entry.getValue());
             }
-            Log.v(LOG_TAG, "activeChannel : " + map.get("activeChannel"));
-            Log.v(LOG_TAG, "channelSid : " + bundle.getString("channelSid"));
+            Log.d(LOG_TAG, "activeChannel : " + map.get("activeChannel"));
+            Log.d(LOG_TAG, "channelSid : " + bundle.getString("channelSid"));
             if (map.containsKey("activeChannel") && (map.get("activeChannel") != null) && map.get("activeChannel").equalsIgnoreCase(bundle.getString("channelSid"))) {
                 showNotification = false;
             }
@@ -220,7 +220,7 @@ public class RNReceivedMessageHandler {
             if (bundle.getString("title") != null && bundle.getString("title").contains(identity) && bundle.getString("author") != null && bundle.getString("message") != null) {
                 String title = bundle.getString("author");
                 String message = "";
-                if (title == "system") {
+                if (title.equalsIgnoreCase("system")) {
                     title = "workplace_bot";
                     message = bundle.getString("message").replace("system: ", "");
                     bundle.putString("message", message);
