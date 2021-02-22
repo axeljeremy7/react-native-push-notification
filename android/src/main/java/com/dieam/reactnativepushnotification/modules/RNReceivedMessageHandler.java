@@ -126,8 +126,8 @@ public class RNReceivedMessageHandler {
         Map<String, String> notificationData = message.getData();
 
         for (Map.Entry<String, String> entry : notificationData.entrySet()) {
-            Log.d(LOG_TAG, "notificationData getKey: " + entry.getKey());
-            Log.d(LOG_TAG, "notificationData getValue: " + entry.getValue());
+            Log.d(LOG_TAG, "Notification Data getKey: " + entry.getKey());
+            Log.d(LOG_TAG, "Notification Data getValue: " + entry.getValue());
             dataBundle.putString(entry.getKey(), entry.getValue());
             if (entry.getKey().equalsIgnoreCase("twi_body")) {
                 dataBundle.putString("message", entry.getValue());
@@ -153,11 +153,13 @@ public class RNReceivedMessageHandler {
             } else if (entry.getKey().equalsIgnoreCase("message_id")) {
                 dataBundle.putString("messageSid", entry.getValue());
                 bundle.putString("messageSid", entry.getValue());
+            } else if (entry.getKey().equalsIgnoreCase("author")) {
+                bundle.putString("author", entry.getValue());
             }
         }
         bundle.putString("visibility", "public");
         bundle.putString("priority", "max");
-        bundle.putInt("group", 0);
+        bundle.putString("group", "0");
         bundle.putBoolean("groupSummary", true);
 
         bundle.putParcelable("data", dataBundle);
@@ -199,57 +201,68 @@ public class RNReceivedMessageHandler {
 
     private void handleRemotePushNotification(ReactApplicationContext context, Bundle bundle) {
         Log.d(LOG_TAG, "handleRemotePushNotification()");
-        // If notification ID is not provided by the user for push notification, generate one at random
-        if (bundle.getString("id") == null) {
-            Log.d(LOG_TAG, "bundle.getString() is null");
-            SecureRandom randomNumberGenerator = new SecureRandom();
-            bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
-        } else {
-            Log.d(LOG_TAG, "bundle.getString() is not null");
-        }
-
-        Application applicationContext = (Application) context.getApplicationContext();
-
-        RNPushNotificationConfig config = new RNPushNotificationConfig(mFirebaseMessagingService.getApplication());
-        RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
-
-        boolean isForeground = pushNotificationHelper.isApplicationInForeground();
-        RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
-        bundle.putBoolean("foreground", isForeground);
-        bundle.putBoolean("userInteraction", false);
-        Log.v(LOG_TAG, "bundle " + bundle);
-
         boolean showNotification = true;
+        String identity = "";
         try {
-//            ReactContext reactContext = getReactApplicationContext();
-//            Context context = mFirebaseMessagingService.getApplicationContext();
             SharedPreferences sharedPreferences = context.getSharedPreferences("dsp", Context.MODE_PRIVATE);
-            Log.v(LOG_TAG, "notifyNotification bundle " + sharedPreferences.toString());
             Map<String, String> map = (Map<String, String>) sharedPreferences.getAll();
             for (Map.Entry<String, String> entry : map.entrySet()) {
-                Log.v(LOG_TAG, "Key = " + entry.getKey() + ", Value = " + entry.getValue());
+                Log.v(LOG_TAG, "SharedPreferences => Key = " + entry.getKey() + ", Value = " + entry.getValue());
             }
             Log.v(LOG_TAG, "activeChannel : " + map.get("activeChannel"));
             Log.v(LOG_TAG, "channelSid : " + bundle.getString("channelSid"));
             if (map.containsKey("activeChannel") && (map.get("activeChannel") != null) && map.get("activeChannel").equalsIgnoreCase(bundle.getString("channelSid"))) {
                 showNotification = false;
             }
+            if (map.containsKey("identity") && (map.get("identity") != null)) {
+                identity = map.get("identity");
+            }
+            if (bundle.getString("title") != null && bundle.getString("title").contains(identity) && bundle.getString("author") != null && bundle.getString("message") != null) {
+                String title = bundle.getString("author");
+                if (title == "system") {
+                    title = "workplace_bot";
+                }
+                String message = bundle.getString("message").replace(title + ": ", "");
+                bundle.putString("message", message);
+                bundle.putString("title", title);
+            }
         } catch (Exception e) {
             Log.e(LOG_TAG, "getSharedPreferences: " + e.getMessage());
         }
 
-        if (showNotification) {
-            Log.v(LOG_TAG, "notifyNotification()");
-            jsDelivery.notifyNotification(bundle);
-            // If contentAvailable is set to true, then send out a remote fetch event
-            if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
-                Log.d(LOG_TAG, "notifyRemoteFetch()");
-                jsDelivery.notifyRemoteFetch(bundle);
+        // If notification ID is not provided by the user for push notification, generate one at random
+        if (bundle.getString("id") == null) {
+            Log.d(LOG_TAG, "bundle.getString(id) is null");
+            SecureRandom randomNumberGenerator = new SecureRandom();
+            bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
+        } else {
+            Log.d(LOG_TAG, "bundle.getString(id) is not null");
+        }
+
+        Application applicationContext = (Application) context.getApplicationContext();
+        RNPushNotificationConfig config = new RNPushNotificationConfig(mFirebaseMessagingService.getApplication());
+        RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
+        boolean isForeground = pushNotificationHelper.isApplicationInForeground();
+        RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
+        bundle.putBoolean("foreground", isForeground);
+        bundle.putBoolean("userInteraction", false);
+        Log.v(LOG_TAG, "bundle " + bundle);
+        try {
+            if (showNotification) {
+                Log.v(LOG_TAG, "notifyNotification()");
+                jsDelivery.notifyNotification(bundle);
+                // If contentAvailable is set to true, then send out a remote fetch event
+                if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
+                    Log.d(LOG_TAG, "notifyRemoteFetch()");
+                    jsDelivery.notifyRemoteFetch(bundle);
+                }
+                if (config.getNotificationForeground() || !isForeground) {
+                    Log.d(LOG_TAG, "sendToNotificationCentre()");
+                    pushNotificationHelper.sendToNotificationCentre(bundle);
+                }
             }
-            if (config.getNotificationForeground() || !isForeground) {
-                Log.d(LOG_TAG, "sendToNotificationCentre()");
-                pushNotificationHelper.sendToNotificationCentre(bundle);
-            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Fail sending notification: " + e.getMessage());
         }
     }
 
