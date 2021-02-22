@@ -250,7 +250,7 @@ public class RNReceivedMessageHandler {
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
         bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
-        Log.v(LOG_TAG, "bundle " + bundle);
+        Log.v(LOG_TAG, "bundle => " + bundle);
         try {
             if (showNotification) {
                 Log.v(LOG_TAG, "notifyNotification()");
