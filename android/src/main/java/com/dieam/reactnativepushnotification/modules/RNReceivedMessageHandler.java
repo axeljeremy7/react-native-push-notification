@@ -229,6 +229,10 @@ public class RNReceivedMessageHandler {
                 if (title.contains("workplace_bot")) {
                     title = "workplace_bot";
                 }
+                if(title.contains("system")){
+                    title = "workplace_bot";
+                    message = message.replace(title + ": ", "");
+                }
                 Log.d(LOG_TAG, "title : " + title);
                 Log.d(LOG_TAG, "message : " + message);
                 bundle.putString("title", title);
