@@ -300,17 +300,21 @@ public class RNPushNotificationHelper {
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) { // API 20 and higher
-//                String group = bundle.getString("group");
-//                if (group != null) {
-//                    notification.setGroup(group);
-//                }
+                try {
+                    String group = bundle.getString("group"); // expected int
+                    if (group != null) {
+                        notification.setGroup(group);
+                    }
 
-//                if (bundle.containsKey("groupSummary") || bundle.getBoolean("groupSummary")) {
-//                    notification.setGroupSummary(bundle.getBoolean("groupSummary"));
-//                }
-                // channel_id
-                notification.setGroup(String.valueOf(0));
-                notification.setGroupSummary(true);
+                    if (bundle.containsKey("groupSummary") || bundle.getBoolean("groupSummary")) {
+                        notification.setGroupSummary(bundle.getBoolean("groupSummary"));
+                    }
+                    // channel_id
+//                    notification.setGroup(String.valueOf(0));
+//                    notification.setGroupSummary(true);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Group => " + e.getMessage());
+                }
             }
 
             // Build.VERSION.SDK_INT

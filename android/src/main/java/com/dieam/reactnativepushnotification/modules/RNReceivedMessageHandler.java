@@ -153,7 +153,7 @@ public class RNReceivedMessageHandler {
                 bundle.putString("channelId", entry.getValue());
                 bundle.putString("channelSid", entry.getValue());
 
-                bundle.putString("group", entry.getValue());
+//                bundle.putString("group", entry.getValue());
                 dataBundle.putString("channelSid", entry.getValue());
             } else if (entry.getKey().equalsIgnoreCase("message_index")) {
                 dataBundle.putString("id", entry.getValue());
@@ -170,6 +170,7 @@ public class RNReceivedMessageHandler {
 //        bundle.putBoolean("groupSummary", true);
         bundle.putParcelable("data", dataBundle);
         Log.d(LOG_TAG, "bundle: " + bundle);
+        bundle.putInt("group", 0);
 //        Log.v(LOG_TAG, "onMessageReceived: " + bundle);
 
         // We need to run this on the main thread, as the React code assumes that is true.
