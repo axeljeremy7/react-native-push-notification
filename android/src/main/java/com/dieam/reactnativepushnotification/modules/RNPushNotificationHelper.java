@@ -298,8 +298,11 @@ public class RNPushNotificationHelper {
                 // Changing Default mode of notification
                 notification.setDefaults(Notification.DEFAULT_LIGHTS);
             }
+            Log.d(LOG_TAG, "Build.VERSION.SDK_INT: " + Build.VERSION.SDK_INT);
+            Log.d(LOG_TAG, "Build.VERSION_CODES.KITKAT_WATCH: " + Build.VERSION_CODES.KITKAT_WATCH);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) { // API 20 and higher
+                Log.e(LOG_TAG, "Group Notification");
                 try {
                     String group = bundle.getString("group"); // expected int
                     if (group != null) {
@@ -316,11 +319,6 @@ public class RNPushNotificationHelper {
                     Log.e(LOG_TAG, "Group => " + e.getMessage());
                 }
             }
-
-            // Build.VERSION.SDK_INT
-            // Build.VERSION_CODES.KITKAT_WATCH
-            Log.d(LOG_TAG, "Build.VERSION.SDK_INT: " + Build.VERSION.SDK_INT);
-            Log.d(LOG_TAG, "Build.VERSION_CODES.KITKAT_WATCH: " + Build.VERSION_CODES.KITKAT_WATCH);
 
             String numberString = bundle.getString("number");
 
