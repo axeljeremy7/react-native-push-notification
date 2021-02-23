@@ -291,7 +291,6 @@ public class RNPushNotificationHelper {
                 // Restore showing timestamp on Android 7+
                 // Source: https://developer.android.com/reference/android/app/Notification.Builder.html#setShowWhen(boolean)
                 boolean showWhen = bundle.getBoolean("showWhen", true);
-
                 notification.setShowWhen(showWhen);
             }
 
@@ -310,9 +309,14 @@ public class RNPushNotificationHelper {
 //                    notification.setGroupSummary(bundle.getBoolean("groupSummary"));
 //                }
                 // channel_id
-//                notification.setGroup("0");
-//                notification.setGroupSummary(true);
+                notification.setGroup(channel_id);
+                notification.setGroupSummary(true);
             }
+
+            // Build.VERSION.SDK_INT
+            // Build.VERSION_CODES.KITKAT_WATCH
+            Log.d(LOG_TAG, "Build.VERSION.SDK_INT: " + Build.VERSION.SDK_INT);
+            Log.d(LOG_TAG, "Build.VERSION_CODES.KITKAT_WATCH: " + Build.VERSION_CODES.KITKAT_WATCH);
 
             String numberString = bundle.getString("number");
 
@@ -456,11 +460,7 @@ public class RNPushNotificationHelper {
                 }
             }
 
-            SecureRandom randomNumberGenerator = new SecureRandom();
-            int notificationID = randomNumberGenerator.nextInt();
-            if (notificationIdString instanceof String || notificationIdString.getClass() == String.class) {
-                notificationID = Integer.parseInt(notificationIdString);
-            }
+            int notificationID = Integer.parseInt(notificationIdString);
 
             PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT);

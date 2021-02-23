@@ -146,6 +146,8 @@ public class RNReceivedMessageHandler {
                 bundle.putString("tag", entry.getValue());
                 bundle.putString("channelId", entry.getValue());
                 bundle.putString("channelSid", entry.getValue());
+
+                bundle.putString("group", entry.getValue());
                 dataBundle.putString("channelSid", entry.getValue());
             } else if (entry.getKey().equalsIgnoreCase("message_index")) {
                 dataBundle.putString("id", entry.getValue());
@@ -159,13 +161,9 @@ public class RNReceivedMessageHandler {
         }
         bundle.putString("visibility", "public");
         bundle.putString("priority", "high");
-        bundle.putString("group", "0");
 //        bundle.putBoolean("groupSummary", true);
-
         bundle.putParcelable("data", dataBundle);
-
-        Log.v(LOG_TAG, "dataBundle:" + dataBundle);
-        Log.v(LOG_TAG, "bundle: " + bundle);
+        Log.d(LOG_TAG, "bundle: " + bundle);
 //        Log.v(LOG_TAG, "onMessageReceived: " + bundle);
 
         // We need to run this on the main thread, as the React code assumes that is true.
@@ -207,7 +205,7 @@ public class RNReceivedMessageHandler {
             SharedPreferences sharedPreferences = context.getSharedPreferences("dsp", Context.MODE_PRIVATE);
             Map<String, String> map = (Map<String, String>) sharedPreferences.getAll();
             for (Map.Entry<String, String> entry : map.entrySet()) {
-                Log.v(LOG_TAG, "SharedPreferences => Key = " + entry.getKey() + ", Value = " + entry.getValue());
+                Log.d(LOG_TAG, "SharedPreferences => Key = " + entry.getKey() + ", Value = " + entry.getValue());
             }
             Log.d(LOG_TAG, "activeChannel : " + map.get("activeChannel"));
             Log.d(LOG_TAG, "channelSid : " + bundle.getString("channelSid"));
@@ -231,7 +229,6 @@ public class RNReceivedMessageHandler {
                 if (title.contains("workplace_bot")) {
                     title = "workplace_bot";
                 }
-                Log.d(LOG_TAG, "Duo Channel");
                 Log.d(LOG_TAG, "title : " + title);
                 Log.d(LOG_TAG, "message : " + message);
                 bundle.putString("title", title);
@@ -240,7 +237,7 @@ public class RNReceivedMessageHandler {
         } catch (Exception e) {
             Log.e(LOG_TAG, "getSharedPreferences: " + e.getMessage());
         }
-
+        Log.d(LOG_TAG, "bundle: " + bundle);
         // If notification ID is not provided by the user for push notification, generate one at random
         if (bundle.getString("id") == null) {
             Log.d(LOG_TAG, "bundle.getString(id) is null");
