@@ -141,6 +141,8 @@ public class RNReceivedMessageHandler {
             } else if (entry.getKey().equalsIgnoreCase("channel_title")) {
                 dataBundle.putString("title", entry.getValue());
                 bundle.putString("title", entry.getValue());
+                // title
+                bundle.putString("group", entry.getValue());
             } else if (entry.getKey().equalsIgnoreCase("twi_sound")) {
 //                bundle.putString("sound", entry.getValue());
                 dataBundle.putString("sound", "default");
@@ -167,10 +169,10 @@ public class RNReceivedMessageHandler {
         }
         bundle.putString("visibility", "public");
         bundle.putString("priority", "high");
-//        bundle.putBoolean("groupSummary", true);
+        bundle.putBoolean("groupSummary", true);
         bundle.putParcelable("data", dataBundle);
         Log.d(LOG_TAG, "bundle: " + bundle);
-        bundle.putInt("group", 0);
+//        bundle.putInt("group", 0);
 //        Log.v(LOG_TAG, "onMessageReceived: " + bundle);
 
         // We need to run this on the main thread, as the React code assumes that is true.
