@@ -160,7 +160,7 @@ public class RNReceivedMessageHandler {
         bundle.putString("visibility", "public");
         bundle.putString("priority", "high");
         bundle.putString("group", "0");
-        bundle.putBoolean("groupSummary", true);
+//        bundle.putBoolean("groupSummary", true);
 
         bundle.putParcelable("data", dataBundle);
 
@@ -217,18 +217,20 @@ public class RNReceivedMessageHandler {
             if (map.containsKey("identity") && (map.get("identity") != null)) {
                 identity = map.get("identity");
             }
+            String message = bundle.getString("message");
+            if(message.contains("system:")){
+                message = message.replace("system: ", "");
+            }
             if (bundle.getString("title") != null && bundle.getString("title").contains(identity) && bundle.getString("author") != null && bundle.getString("message") != null) {
                 String title = bundle.getString("author");
-                String message = "";
                 if (title.equalsIgnoreCase("system")) {
                     title = "workplace_bot";
-                    message = bundle.getString("message").replace("system: ", "");
-                    bundle.putString("message", message);
+                    message = message.replace("system: ", "");
                 } else {
-                    message = bundle.getString("message").replace(title + ": ", "");
-                    bundle.putString("message", message);
+                    message = message.replace(title + ": ", "");
                 }
                 bundle.putString("title", title);
+                bundle.putString("message", message);
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "getSharedPreferences: " + e.getMessage());

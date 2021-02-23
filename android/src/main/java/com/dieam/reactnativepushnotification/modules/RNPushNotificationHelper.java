@@ -301,15 +301,17 @@ public class RNPushNotificationHelper {
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) { // API 20 and higher
-                String group = bundle.getString("group");
+//                String group = bundle.getString("group");
+//                if (group != null) {
+//                    notification.setGroup(group);
+//                }
 
-                if (group != null) {
-                    notification.setGroup(group);
-                }
-
-                if (bundle.containsKey("groupSummary") || bundle.getBoolean("groupSummary")) {
-                    notification.setGroupSummary(bundle.getBoolean("groupSummary"));
-                }
+//                if (bundle.containsKey("groupSummary") || bundle.getBoolean("groupSummary")) {
+//                    notification.setGroupSummary(bundle.getBoolean("groupSummary"));
+//                }
+                // channel_id
+                notification.setGroup(channel_id);
+                notification.setGroupSummary(true);
             }
 
             String numberString = bundle.getString("number");
