@@ -304,7 +304,7 @@ public class RNPushNotificationHelper {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) { // API 20 and higher
                 Log.e(LOG_TAG, "Group Notification");
                 try {
-                    String group = bundle.getString("group"); // expected int
+                    String group = bundle.getString("group");
                     if (group != null) {
                         notification.setGroup(group);
                     }
