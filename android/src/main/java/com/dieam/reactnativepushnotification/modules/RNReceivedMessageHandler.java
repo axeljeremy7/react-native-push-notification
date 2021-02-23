@@ -219,20 +219,20 @@ public class RNReceivedMessageHandler {
             }
             String message = bundle.getString("message");
             Log.d(LOG_TAG, "message : " + message);
-            if(message.contains("system:")){
-                message = message.replace("system:", "");
+            if (message.contains("system:")) {
+                message = message.replace("system: ", "workplace_bot: ");
+                Log.d(LOG_TAG, "message : " + message);
+                bundle.putString("message", message);
             }
-            Log.d(LOG_TAG, "message : " + message);
+
             if (bundle.getString("title") != null && bundle.getString("title").contains(identity) && bundle.getString("author") != null) {
                 String title = bundle.getString("author");
-                Log.d(LOG_TAG, "title/author : " + title);
-                if (title.equalsIgnoreCase("system")) {
+                message = message.replace(title + ": ", "");
+                if (title.contains("workplace_bot")) {
                     title = "workplace_bot";
-                    message = message.replace("system: ", "");
-                } else {
-                    message = message.replace(title + ": ", "");
                 }
-                Log.d(LOG_TAG, "title/author : " + title);
+                Log.d(LOG_TAG, "Duo Channel");
+                Log.d(LOG_TAG, "title : " + title);
                 Log.d(LOG_TAG, "message : " + message);
                 bundle.putString("title", title);
                 bundle.putString("message", message);
