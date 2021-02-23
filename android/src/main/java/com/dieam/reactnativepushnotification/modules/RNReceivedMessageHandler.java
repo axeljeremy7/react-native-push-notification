@@ -44,6 +44,12 @@ public class RNReceivedMessageHandler {
 
     public void handleReceivedMessage(RemoteMessage message) {
         Log.d(LOG_TAG, "handleReceivedMessage()");
+        Log.d(LOG_TAG, "handleReceivedMessage() message getTo => " + message.getTo());
+        Log.d(LOG_TAG, "handleReceivedMessage() message getFrom => " + message.getFrom());
+        Log.d(LOG_TAG, "handleReceivedMessage() message getCollapseKey => " + message.getCollapseKey());
+        Log.d(LOG_TAG, "handleReceivedMessage() message getMessageId => " + message.getMessageId());
+        Log.d(LOG_TAG, "handleReceivedMessage() message getSenderId => " + message.getSenderId());
+        Log.d(LOG_TAG, "handleReceivedMessage() message getMessageType => " + message.getMessageType());
         String from = message.getFrom();
         RemoteMessage.Notification remoteNotification = message.getNotification();
         final Bundle bundle = new Bundle();
