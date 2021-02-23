@@ -310,8 +310,8 @@ public class RNPushNotificationHelper {
 //                    notification.setGroupSummary(bundle.getBoolean("groupSummary"));
 //                }
                 // channel_id
-                notification.setGroup(channel_id);
-                notification.setGroupSummary(true);
+//                notification.setGroup("0");
+//                notification.setGroupSummary(true);
             }
 
             String numberString = bundle.getString("number");

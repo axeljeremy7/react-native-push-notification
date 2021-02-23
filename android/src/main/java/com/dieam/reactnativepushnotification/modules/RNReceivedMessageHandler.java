@@ -218,17 +218,22 @@ public class RNReceivedMessageHandler {
                 identity = map.get("identity");
             }
             String message = bundle.getString("message");
+            Log.d(LOG_TAG, "message : " + message);
             if(message.contains("system:")){
-                message = message.replace("system: ", "");
+                message = message.replace("system:", "");
             }
-            if (bundle.getString("title") != null && bundle.getString("title").contains(identity) && bundle.getString("author") != null && bundle.getString("message") != null) {
+            Log.d(LOG_TAG, "message : " + message);
+            if (bundle.getString("title") != null && bundle.getString("title").contains(identity) && bundle.getString("author") != null) {
                 String title = bundle.getString("author");
+                Log.d(LOG_TAG, "title/author : " + title);
                 if (title.equalsIgnoreCase("system")) {
                     title = "workplace_bot";
                     message = message.replace("system: ", "");
                 } else {
                     message = message.replace(title + ": ", "");
                 }
+                Log.d(LOG_TAG, "title/author : " + title);
+                Log.d(LOG_TAG, "message : " + message);
                 bundle.putString("title", title);
                 bundle.putString("message", message);
             }
@@ -252,7 +257,7 @@ public class RNReceivedMessageHandler {
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
         bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
-        Log.v(LOG_TAG, "bundle => " + bundle);
+        Log.d(LOG_TAG, "bundle => " + bundle);
         try {
             if (showNotification) {
                 Log.v(LOG_TAG, "notifyNotification()");
