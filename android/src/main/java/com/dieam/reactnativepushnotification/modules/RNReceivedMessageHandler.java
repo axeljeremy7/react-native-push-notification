@@ -217,29 +217,24 @@ public class RNReceivedMessageHandler {
             Log.d(LOG_TAG, "identity      : " + map.get("identity"));
             Log.d(LOG_TAG, "activeChannel : " + map.get("activeChannel"));
             Log.d(LOG_TAG, "channelSid    : " + bundle.getString("channelId"));
-            if ((map.get("activeChannel") != null) && map.get("activeChannel").equalsIgnoreCase(bundle.getString("channelSid"))) {
+            if ((map.get("activeChannel") != null) && map.get("activeChannel").equalsIgnoreCase(bundle.getString("channelId"))) {
+                Log.d(LOG_TAG, "No show notification.");
                 return;
             }
             if (map.get("identity") != null) {
                 identity = map.get("identity");
             }
-            String message = bundle.getString("message");
-            if (message.contains("system:")) {
-                message = message.replace("system:", "workplace_bot:");
-                Log.d(LOG_TAG, "message : " + message);
-                bundle.putString("message", message);
-            }
 
             if (bundle.getString("title") != null && bundle.getString("title").contains(identity) && bundle.getString("author") != null) {
+                String message = bundle.getString("message");
                 String title = bundle.getString("author");
-                message = message.replace(title + ": ", "");
-                if (title.contains("workplace_bot")) {
-                    title = "workplace_bot";
-                }
                 if (title.contains("system")) {
+                    message = message.replaceFirst(title + ": ", "");
                     title = "workplace_bot";
-                    message = message.replace(title + ": ", "");
+                } else if (title.contains("workplace_bot")) {
+                    title = "workplace_bot";
                 }
+                message = message.replaceFirst(title + ": ", "");
                 Log.d(LOG_TAG, "title   : " + title);
                 Log.d(LOG_TAG, "message : " + message);
                 bundle.putString("title", title);
