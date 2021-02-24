@@ -340,7 +340,7 @@ public class RNPushNotificationHelper {
                     smallIconResId = android.R.drawable.ic_dialog_info;
                 }
             }
-
+            Log.d(LOG_TAG, "smallIconResId => " + smallIconResId);
             notification.setSmallIcon(smallIconResId);
 
             // Large icon

@@ -51,6 +51,7 @@ public class RNReceivedMessageHandler {
         Log.d(LOG_TAG, "handleReceivedMessage() message getSenderId => " + message.getSenderId());
         Log.d(LOG_TAG, "handleReceivedMessage() message getMessageType => " + message.getMessageType());
         Log.d(LOG_TAG, "handleReceivedMessage() message getNotification => " + message.getNotification());
+
         String from = message.getFrom();
         RemoteMessage.Notification remoteNotification = message.getNotification();
         final Bundle bundle = new Bundle();
@@ -128,22 +129,31 @@ public class RNReceivedMessageHandler {
         Bundle dataBundle = new Bundle();
         Map<String, String> notificationData = message.getData();
 
-        for(Map.Entry<String, String> entry : notificationData.entrySet()) {
+        for (Map.Entry<String, String> entry : notificationData.entrySet()) {
             dataBundle.putString(entry.getKey(), entry.getValue());
         }
 
-        if(dataBundle.getString("twi_body") != null){
+        if (dataBundle.getString("twi_body") != null) {
             bundle.putString("message", dataBundle.getString("twi_body"));
+            Log.d(LOG_TAG, "message: " + bundle.getString("message"));
         }
-        if(dataBundle.getString("title") != null){
-            bundle.putString("title", dataBundle.getString("title"));
+        if (dataBundle.getString("channel_title") != null) {
+            bundle.putString("title", dataBundle.getString("channel_title"));
+            Log.d(LOG_TAG, "message: " + bundle.getString("title"));
+        }
+        if (dataBundle.getString("channel_sid") != null) {
+            //channelId
+            bundle.putString("channelId", dataBundle.getString("channel_sid"));
+//            bundle.putString("tag", dataBundle.getString("channel_sid"));
+            Log.d(LOG_TAG, "channelId: " + bundle.getString("channelId"));
+        }
+        if (message.getMessageId() != null) {
+            bundle.putString("messageId", message.getMessageId());
         }
         bundle.putString("priority", "high");
         bundle.putString("visibility", "public");
         bundle.putParcelable("data", dataBundle);
 
-        Log.v(LOG_TAG, "dataBundle => " + dataBundle);
-        Log.v(LOG_TAG, "bundle     => " + dataBundle);
         Log.v(LOG_TAG, "onMessageReceived: " + bundle);
         // We need to run this on the main thread, as the React code assumes that is true.
         // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
@@ -194,8 +204,8 @@ public class RNReceivedMessageHandler {
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
         bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
+        Log.v(LOG_TAG, "bundle => " + bundle);
         jsDelivery.notifyNotification(bundle);
-
         // If contentAvailable is set to true, then send out a remote fetch event
         if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
             jsDelivery.notifyRemoteFetch(bundle);
