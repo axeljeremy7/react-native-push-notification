@@ -132,6 +132,14 @@ public class RNReceivedMessageHandler {
             dataBundle.putString(entry.getKey(), entry.getValue());
         }
 
+        if(dataBundle.getString("twi_body") != null){
+            bundle.putString("message", dataBundle.getString("twi_body"));
+        }
+        if(dataBundle.getString("title") != null){
+            bundle.putString("title", dataBundle.getString("title"));
+        }
+        bundle.putString("priority", "high");
+        bundle.putString("visibility", "public");
         bundle.putParcelable("data", dataBundle);
 
         Log.v(LOG_TAG, "dataBundle => " + dataBundle);
