@@ -44,13 +44,13 @@ public class RNReceivedMessageHandler {
 
     public void handleReceivedMessage(RemoteMessage message) {
         Log.d(LOG_TAG, "handleReceivedMessage()");
-        Log.d(LOG_TAG, "handleReceivedMessage() message getTo => " + message.getTo());
-        Log.d(LOG_TAG, "handleReceivedMessage() message getFrom => " + message.getFrom());
-        Log.d(LOG_TAG, "handleReceivedMessage() message getCollapseKey => " + message.getCollapseKey());
-        Log.d(LOG_TAG, "handleReceivedMessage() message getMessageId => " + message.getMessageId());
-        Log.d(LOG_TAG, "handleReceivedMessage() message getSenderId => " + message.getSenderId());
-        Log.d(LOG_TAG, "handleReceivedMessage() message getMessageType => " + message.getMessageType());
-        Log.d(LOG_TAG, "handleReceivedMessage() message getNotification => " + message.getNotification());
+        Log.d(LOG_TAG, "handleReceivedMessage()  message.getTo => " + message.getTo());
+        Log.d(LOG_TAG, "handleReceivedMessage()  message.getFrom => " + message.getFrom());
+        Log.d(LOG_TAG, "handleReceivedMessage()  message.getCollapseKey => " + message.getCollapseKey());
+        Log.d(LOG_TAG, "handleReceivedMessage()  message.getMessageId => " + message.getMessageId());
+        Log.d(LOG_TAG, "handleReceivedMessage()  message.getSenderId => " + message.getSenderId());
+        Log.d(LOG_TAG, "handleReceivedMessage()  message.getMessageType => " + message.getMessageType());
+        Log.d(LOG_TAG, "handleReceivedMessage()  message.getNotification => " + message.getNotification());
 
         String from = message.getFrom();
         RemoteMessage.Notification remoteNotification = message.getNotification();
@@ -132,6 +132,11 @@ public class RNReceivedMessageHandler {
         for (Map.Entry<String, String> entry : notificationData.entrySet()) {
             dataBundle.putString(entry.getKey(), entry.getValue());
         }
+        Log.d(LOG_TAG, "twi_body: " + dataBundle.getString("twi_body"));
+        Log.d(LOG_TAG, "channel_title: " + dataBundle.getString("channel_title"));
+        Log.d(LOG_TAG, "channel_sid: " + dataBundle.getString("channel_sid"));
+        Log.d(LOG_TAG, "message_index: " + dataBundle.getString("message_index"));
+        Log.d(LOG_TAG, "messageId: " + message.getMessageId());
 
         if (dataBundle.getString("twi_body") != null) {
             bundle.putString("message", dataBundle.getString("twi_body"));
@@ -141,10 +146,14 @@ public class RNReceivedMessageHandler {
             bundle.putString("title", dataBundle.getString("channel_title"));
             Log.d(LOG_TAG, "message: " + bundle.getString("title"));
         }
+        if (dataBundle.getString("message_index") != null) {
+            bundle.putString("number", dataBundle.getString("message_index"));
+            Log.d(LOG_TAG, "number: " + bundle.getString("number"));
+        }
         if (dataBundle.getString("channel_sid") != null) {
             //channelId
             bundle.putString("channelId", dataBundle.getString("channel_sid"));
-//            bundle.putString("tag", dataBundle.getString("channel_sid"));
+            bundle.putString("tag", dataBundle.getString("channel_sid"));
             Log.d(LOG_TAG, "channelId: " + bundle.getString("channelId"));
         }
         if (message.getMessageId() != null) {
@@ -152,9 +161,10 @@ public class RNReceivedMessageHandler {
         }
         bundle.putString("priority", "high");
         bundle.putString("visibility", "public");
+        bundle.putString("sound", "default");
         bundle.putParcelable("data", dataBundle);
 
-        Log.v(LOG_TAG, "onMessageReceived: " + bundle);
+        Log.d(LOG_TAG, "bundle => " + bundle);
         // We need to run this on the main thread, as the React code assumes that is true.
         // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
         // "Can't create handler inside thread that has not called Looper.prepare()"
@@ -204,7 +214,7 @@ public class RNReceivedMessageHandler {
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
         bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
-        Log.v(LOG_TAG, "bundle => " + bundle);
+        Log.d(LOG_TAG, "bundle => " + bundle);
         jsDelivery.notifyNotification(bundle);
         // If contentAvailable is set to true, then send out a remote fetch event
         if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
@@ -212,7 +222,7 @@ public class RNReceivedMessageHandler {
         }
 
         if (config.getNotificationForeground() || !isForeground) {
-            Log.v(LOG_TAG, "sendNotification: " + bundle);
+            Log.d(LOG_TAG, "sendNotification: " + bundle);
 
             pushNotificationHelper.sendToNotificationCentre(bundle);
         }

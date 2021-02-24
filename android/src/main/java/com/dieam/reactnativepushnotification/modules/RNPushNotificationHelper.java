@@ -276,9 +276,16 @@ public class RNPushNotificationHelper {
 
             String channel_id = bundle.getString("channelId");
 
-            if(channel_id == null) {
+            if (channel_id == null) {
                 channel_id = this.config.getNotificationDefaultChannelId();
             }
+
+            Log.d(LOG_TAG, "channelId  : " + bundle.getString("channelId"));
+            Log.d(LOG_TAG, "channel_id : " + channel_id);
+            Log.d(LOG_TAG, "title      : " + title);
+            Log.d(LOG_TAG, "visibility : " + visibility);
+            Log.d(LOG_TAG, "priority   : " + priority);
+            Log.d(LOG_TAG, "tag        : " + bundle.getString("tag"));
 
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context, channel_id)
                     .setContentTitle(title)
@@ -329,7 +336,7 @@ public class RNPushNotificationHelper {
                 if (smallIconResId == 0) {
                     smallIconResId = res.getIdentifier(smallIcon, "mipmap", packageName);
                 }
-            } else if(smallIcon == null) {
+            } else if (smallIcon == null) {
                 smallIconResId = res.getIdentifier("ic_notification", "mipmap", packageName);
             }
 
@@ -344,7 +351,7 @@ public class RNPushNotificationHelper {
             notification.setSmallIcon(smallIconResId);
 
             // Large icon
-            if(largeIconBitmap == null) {
+            if (largeIconBitmap == null) {
                 int largeIconResId = 0;
 
                 String largeIcon = bundle.getString("largeIcon");
@@ -354,7 +361,7 @@ public class RNPushNotificationHelper {
                     if (largeIconResId == 0) {
                         largeIconResId = res.getIdentifier(largeIcon, "mipmap", packageName);
                     }
-                } else if(largeIcon == null) {
+                } else if (largeIcon == null) {
                     largeIconResId = res.getIdentifier("ic_launcher", "mipmap", packageName);
                 }
 
@@ -364,7 +371,7 @@ public class RNPushNotificationHelper {
                 }
             }
 
-            if (largeIconBitmap != null){
+            if (largeIconBitmap != null) {
                 notification.setLargeIcon(largeIconBitmap);
             }
 
@@ -386,10 +393,10 @@ public class RNPushNotificationHelper {
 
             NotificationCompat.Style style;
 
-            if(bigPictureBitmap != null) {
+            if (bigPictureBitmap != null) {
 
                 // Big large icon
-                if(bigLargeIconBitmap == null) {
+                if (bigLargeIconBitmap == null) {
                     int bigLargeIconResId = 0;
 
                     String bigLargeIcon = bundle.getString("bigLargeIcon");
@@ -407,8 +414,7 @@ public class RNPushNotificationHelper {
                         .setBigContentTitle(title)
                         .setSummaryText(message)
                         .bigLargeIcon(bigLargeIconBitmap);
-            }
-            else {
+            } else {
                 style = new NotificationCompat.BigTextStyle().bigText(bigText);
             }
 
@@ -538,9 +544,9 @@ public class RNPushNotificationHelper {
 
                     PendingIntent pendingActionIntent = PendingIntent.getBroadcast(context, notificationID, actionIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT);
-                    if(action.equals("ReplyInput")){
+                    if (action.equals("ReplyInput")) {
                         //Action with inline reply
-                        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH){
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
                             RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
                                     .setLabel(bundle.getString("reply_placeholder_text"))
                                     .build();
@@ -551,13 +557,11 @@ public class RNPushNotificationHelper {
                                     .build();
 
                             notification.addAction(replyAction);
-                        }
-                        else{
+                        } else {
                             // The notification will not have action
                             break;
                         }
-                    }
-                    else{
+                    } else {
                         // Add "action" for later identifying which button gets pressed
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             notification.addAction(new NotificationCompat.Action.Builder(icon, action, pendingActionIntent).build());
