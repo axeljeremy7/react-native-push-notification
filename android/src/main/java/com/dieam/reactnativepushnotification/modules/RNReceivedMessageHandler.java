@@ -132,11 +132,11 @@ public class RNReceivedMessageHandler {
         for (Map.Entry<String, String> entry : notificationData.entrySet()) {
             dataBundle.putString(entry.getKey(), entry.getValue());
         }
-        Log.d(LOG_TAG, "twi_body: " + dataBundle.getString("twi_body"));
-        Log.d(LOG_TAG, "channel_title: " + dataBundle.getString("channel_title"));
-        Log.d(LOG_TAG, "channel_sid: " + dataBundle.getString("channel_sid"));
-        Log.d(LOG_TAG, "message_index: " + dataBundle.getString("message_index"));
-        Log.d(LOG_TAG, "messageId: " + message.getMessageId());
+        Log.d(LOG_TAG, "twi_body      : " + dataBundle.getString("twi_body"));
+        Log.d(LOG_TAG, "channel_title : " + dataBundle.getString("channel_title"));
+        Log.d(LOG_TAG, "channel_sid   : " + dataBundle.getString("channel_sid"));
+        Log.d(LOG_TAG, "message_index : " + dataBundle.getString("message_index"));
+        Log.d(LOG_TAG, "messageId     : " + message.getMessageId());
 
         if (dataBundle.getString("twi_body") != null) {
             bundle.putString("message", dataBundle.getString("twi_body"));
@@ -147,7 +147,7 @@ public class RNReceivedMessageHandler {
             Log.d(LOG_TAG, "message: " + bundle.getString("title"));
         }
         if (dataBundle.getString("message_index") != null) {
-            bundle.putString("number", dataBundle.getString("message_index"));
+//            bundle.putString("number", dataBundle.getString("message_index"));
             Log.d(LOG_TAG, "number: " + bundle.getString("number"));
         }
         if (dataBundle.getString("channel_sid") != null) {
@@ -218,12 +218,12 @@ public class RNReceivedMessageHandler {
         jsDelivery.notifyNotification(bundle);
         // If contentAvailable is set to true, then send out a remote fetch event
         if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
+            Log.d(LOG_TAG, "jsDelivery.notifyRemoteFetch: ");
             jsDelivery.notifyRemoteFetch(bundle);
         }
 
         if (config.getNotificationForeground() || !isForeground) {
-            Log.d(LOG_TAG, "sendNotification: " + bundle);
-
+            Log.d(LOG_TAG, "pushNotificationHelper.sendToNotificationCentre: ");
             pushNotificationHelper.sendToNotificationCentre(bundle);
         }
     }

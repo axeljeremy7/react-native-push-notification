@@ -286,6 +286,7 @@ public class RNPushNotificationHelper {
             Log.d(LOG_TAG, "visibility : " + visibility);
             Log.d(LOG_TAG, "priority   : " + priority);
             Log.d(LOG_TAG, "tag        : " + bundle.getString("tag"));
+            Log.d(LOG_TAG, "number     : " + bundle.getString("number"));
 
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context, channel_id)
                     .setContentTitle(title)
@@ -324,6 +325,7 @@ public class RNPushNotificationHelper {
 
             if (numberString != null) {
                 notification.setNumber(Integer.parseInt(numberString));
+                Log.d(LOG_TAG, "number        : " + Integer.parseInt(numberString));
             }
 
             // Small icon

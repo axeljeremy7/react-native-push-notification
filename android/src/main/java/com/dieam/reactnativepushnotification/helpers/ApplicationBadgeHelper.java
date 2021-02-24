@@ -5,11 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.util.Log;
 
 import com.facebook.common.logging.FLog;
 
 import me.leolin.shortcutbadger.Badger;
 import me.leolin.shortcutbadger.ShortcutBadger;
+
+import static com.dieam.reactnativepushnotification.modules.RNPushNotification.LOG_TAG;
 
 /**
  * Helper for setting application launcher icon badge counts.
@@ -28,6 +31,7 @@ public class ApplicationBadgeHelper {
     }
 
     public void setApplicationIconBadgeNumber(Context context, int number) {
+        Log.d(LOG_TAG, "setApplicationIconBadgeNumber()");
         if (null == componentName) {
             componentName = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName()).getComponent();
         }
@@ -35,6 +39,7 @@ public class ApplicationBadgeHelper {
     }
 
     private void tryAutomaticBadge(Context context, int number) {
+        Log.d(LOG_TAG, "tryAutomaticBadge()");
         if (null == applyAutomaticBadger) {
             applyAutomaticBadger = ShortcutBadger.applyCount(context, number);
             if (applyAutomaticBadger) {
