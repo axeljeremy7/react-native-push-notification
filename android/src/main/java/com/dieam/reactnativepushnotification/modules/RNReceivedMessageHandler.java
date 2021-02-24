@@ -129,32 +129,31 @@ public class RNReceivedMessageHandler {
         Bundle dataBundle = new Bundle();
         Map<String, String> notificationData = message.getData();
 
+        String key = "";
+        String value = "";
         for (Map.Entry<String, String> entry : notificationData.entrySet()) {
-            dataBundle.putString(entry.getKey(), entry.getValue());
+            key = entry.getKey();
+            value = entry.getValue();
+            Log.d(LOG_TAG, key + ": " + value);
+            dataBundle.putString(key, value);
         }
-        Log.d(LOG_TAG, "twi_body      : " + dataBundle.getString("twi_body"));
-        Log.d(LOG_TAG, "channel_title : " + dataBundle.getString("channel_title"));
-        Log.d(LOG_TAG, "channel_sid   : " + dataBundle.getString("channel_sid"));
-        Log.d(LOG_TAG, "message_index : " + dataBundle.getString("message_index"));
-        Log.d(LOG_TAG, "messageId     : " + message.getMessageId());
 
         if (dataBundle.getString("twi_body") != null) {
             bundle.putString("message", dataBundle.getString("twi_body"));
-            Log.d(LOG_TAG, "message: " + bundle.getString("message"));
         }
         if (dataBundle.getString("channel_title") != null) {
             bundle.putString("title", dataBundle.getString("channel_title"));
-            Log.d(LOG_TAG, "message: " + bundle.getString("title"));
         }
-        if (dataBundle.getString("message_index") != null) {
-//            bundle.putString("number", dataBundle.getString("message_index"));
-            Log.d(LOG_TAG, "number: " + bundle.getString("number"));
+        if (dataBundle.getString("author") != null) {
+            bundle.putString("author", dataBundle.getString("author"));
         }
+//        if (dataBundle.getString("message_index") != null) {
+////            bundle.putString("number", dataBundle.getString("message_index")); // cause error
+//            Log.d(LOG_TAG, "number: " + bundle.getString("number"));
+//        }
         if (dataBundle.getString("channel_sid") != null) {
-            //channelId
             bundle.putString("channelId", dataBundle.getString("channel_sid"));
             bundle.putString("tag", dataBundle.getString("channel_sid"));
-            Log.d(LOG_TAG, "channelId: " + bundle.getString("channelId"));
         }
         if (message.getMessageId() != null) {
             bundle.putString("messageId", message.getMessageId());
@@ -163,8 +162,12 @@ public class RNReceivedMessageHandler {
         bundle.putString("visibility", "public");
         bundle.putString("sound", "default");
         bundle.putParcelable("data", dataBundle);
+        Log.d(LOG_TAG, "title      : " + bundle.getString("title"));
+        Log.d(LOG_TAG, "message    : " + bundle.getString("message"));
+        Log.d(LOG_TAG, "channelId  : " + bundle.getString("channelId"));
+        Log.d(LOG_TAG, "author     : " + bundle.getString("author"));
+        Log.d(LOG_TAG, "bundle     : " + bundle);
 
-        Log.d(LOG_TAG, "bundle => " + bundle);
         // We need to run this on the main thread, as the React code assumes that is true.
         // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
         // "Can't create handler inside thread that has not called Looper.prepare()"
@@ -203,14 +206,52 @@ public class RNReceivedMessageHandler {
             SecureRandom randomNumberGenerator = new SecureRandom();
             bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
         }
+        String identity = "";
+        try {
+            SharedPreferences sharedPreferences = context.getSharedPreferences("dsp", Context.MODE_PRIVATE);
+            Map<String, String> map = (Map<String, String>) sharedPreferences.getAll();
+            Log.d(LOG_TAG, "SharedPreferences Map");
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                Log.d(LOG_TAG, entry.getKey() + ": " + entry.getValue());
+            }
+            Log.d(LOG_TAG, "identity      : " + map.get("identity"));
+            Log.d(LOG_TAG, "activeChannel : " + map.get("activeChannel"));
+            Log.d(LOG_TAG, "channelSid    : " + bundle.getString("channelId"));
+            if ((map.get("activeChannel") != null) && map.get("activeChannel").equalsIgnoreCase(bundle.getString("channelSid"))) {
+                return;
+            }
+            if (map.get("identity") != null) {
+                identity = map.get("identity");
+            }
+            String message = bundle.getString("message");
+            if (message.contains("system:")) {
+                message = message.replace("system:", "workplace_bot:");
+                Log.d(LOG_TAG, "message : " + message);
+                bundle.putString("message", message);
+            }
 
+            if (bundle.getString("title") != null && bundle.getString("title").contains(identity) && bundle.getString("author") != null) {
+                String title = bundle.getString("author");
+                message = message.replace(title + ": ", "");
+                if (title.contains("workplace_bot")) {
+                    title = "workplace_bot";
+                }
+                if (title.contains("system")) {
+                    title = "workplace_bot";
+                    message = message.replace(title + ": ", "");
+                }
+                Log.d(LOG_TAG, "title   : " + title);
+                Log.d(LOG_TAG, "message : " + message);
+                bundle.putString("title", title);
+                bundle.putString("message", message);
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "getSharedPreferences: " + e.getMessage());
+        }
         Application applicationContext = (Application) context.getApplicationContext();
-
         RNPushNotificationConfig config = new RNPushNotificationConfig(mFirebaseMessagingService.getApplication());
         RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
-
         boolean isForeground = pushNotificationHelper.isApplicationInForeground();
-
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
         bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
