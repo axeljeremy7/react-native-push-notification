@@ -201,6 +201,7 @@ public class RNPushNotificationHelper {
     }
 
     public void sendToNotificationCentreWithPicture(Bundle bundle, Bitmap largeIconBitmap, Bitmap bigPictureBitmap, Bitmap bigLargeIconBitmap) {
+        Log.d(LOG_TAG, "sendToNotificationCentreWithPicture()");
         try {
             Class intentClass = getMainActivityClass();
             if (intentClass == null) {
@@ -275,7 +276,7 @@ public class RNPushNotificationHelper {
 
             String channel_id = bundle.getString("channelId");
 
-            if (channel_id == null) {
+            if(channel_id == null) {
                 channel_id = this.config.getNotificationDefaultChannelId();
             }
 
@@ -291,6 +292,7 @@ public class RNPushNotificationHelper {
                 // Restore showing timestamp on Android 7+
                 // Source: https://developer.android.com/reference/android/app/Notification.Builder.html#setShowWhen(boolean)
                 boolean showWhen = bundle.getBoolean("showWhen", true);
+
                 notification.setShowWhen(showWhen);
             }
 
@@ -298,27 +300,16 @@ public class RNPushNotificationHelper {
                 // Changing Default mode of notification
                 notification.setDefaults(Notification.DEFAULT_LIGHTS);
             }
-            Log.d(LOG_TAG, "Build.VERSION.SDK_INT: " + Build.VERSION.SDK_INT);
-            Log.d(LOG_TAG, "Build.VERSION_CODES.KITKAT_WATCH: " + Build.VERSION_CODES.KITKAT_WATCH);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) { // API 20 and higher
-                Log.e(LOG_TAG, "Group Notification");
-                try {
-                    Log.e(LOG_TAG, "Group Notification group        : " + bundle.getString("group"));
-                    Log.e(LOG_TAG, "Group Notification groupSummary : " + bundle.getBoolean("groupSummary"));
-                    String group = bundle.getString("group");
-                    if (group != null) {
-                        notification.setGroup(group);
-                    }
+                String group = bundle.getString("group");
 
-                    if (bundle.containsKey("groupSummary") || bundle.getBoolean("groupSummary")) {
-                        notification.setGroupSummary(bundle.getBoolean("groupSummary"));
-                    }
-                    // channel_id
-//                    notification.setGroup(String.valueOf(0));
-//                    notification.setGroupSummary(true);
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, "Group => " + e.getMessage());
+                if (group != null) {
+                    notification.setGroup(group);
+                }
+
+                if (bundle.containsKey("groupSummary") || bundle.getBoolean("groupSummary")) {
+                    notification.setGroupSummary(bundle.getBoolean("groupSummary"));
                 }
             }
 
@@ -338,7 +329,7 @@ public class RNPushNotificationHelper {
                 if (smallIconResId == 0) {
                     smallIconResId = res.getIdentifier(smallIcon, "mipmap", packageName);
                 }
-            } else if (smallIcon == null) {
+            } else if(smallIcon == null) {
                 smallIconResId = res.getIdentifier("ic_notification", "mipmap", packageName);
             }
 
@@ -353,7 +344,7 @@ public class RNPushNotificationHelper {
             notification.setSmallIcon(smallIconResId);
 
             // Large icon
-            if (largeIconBitmap == null) {
+            if(largeIconBitmap == null) {
                 int largeIconResId = 0;
 
                 String largeIcon = bundle.getString("largeIcon");
@@ -363,7 +354,7 @@ public class RNPushNotificationHelper {
                     if (largeIconResId == 0) {
                         largeIconResId = res.getIdentifier(largeIcon, "mipmap", packageName);
                     }
-                } else if (largeIcon == null) {
+                } else if(largeIcon == null) {
                     largeIconResId = res.getIdentifier("ic_launcher", "mipmap", packageName);
                 }
 
@@ -373,7 +364,7 @@ public class RNPushNotificationHelper {
                 }
             }
 
-            if (largeIconBitmap != null) {
+            if (largeIconBitmap != null){
                 notification.setLargeIcon(largeIconBitmap);
             }
 
@@ -395,10 +386,10 @@ public class RNPushNotificationHelper {
 
             NotificationCompat.Style style;
 
-            if (bigPictureBitmap != null) {
+            if(bigPictureBitmap != null) {
 
                 // Big large icon
-                if (bigLargeIconBitmap == null) {
+                if(bigLargeIconBitmap == null) {
                     int bigLargeIconResId = 0;
 
                     String bigLargeIcon = bundle.getString("bigLargeIcon");
@@ -416,7 +407,8 @@ public class RNPushNotificationHelper {
                         .setBigContentTitle(title)
                         .setSummaryText(message)
                         .bigLargeIcon(bigLargeIconBitmap);
-            } else {
+            }
+            else {
                 style = new NotificationCompat.BigTextStyle().bigText(bigText);
             }
 
@@ -546,9 +538,9 @@ public class RNPushNotificationHelper {
 
                     PendingIntent pendingActionIntent = PendingIntent.getBroadcast(context, notificationID, actionIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT);
-                    if (action.equals("ReplyInput")) {
+                    if(action.equals("ReplyInput")){
                         //Action with inline reply
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
+                        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH){
                             RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
                                     .setLabel(bundle.getString("reply_placeholder_text"))
                                     .build();
@@ -559,11 +551,13 @@ public class RNPushNotificationHelper {
                                     .build();
 
                             notification.addAction(replyAction);
-                        } else {
+                        }
+                        else{
                             // The notification will not have action
                             break;
                         }
-                    } else {
+                    }
+                    else{
                         // Add "action" for later identifying which button gets pressed
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             notification.addAction(new NotificationCompat.Action.Builder(icon, action, pendingActionIntent).build());
@@ -607,7 +601,7 @@ public class RNPushNotificationHelper {
             // late by many minutes.
             this.scheduleNextNotificationIfRepeating(bundle);
         } catch (Exception e) {
-            Log.e(LOG_TAG, "sendToNotificationCentreWithPicture() - Failed to send push notification", e);
+            Log.e(LOG_TAG, "failed to send push notification", e);
         }
     }
 

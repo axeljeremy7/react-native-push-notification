@@ -50,16 +50,13 @@ public class RNReceivedMessageHandler {
         Log.d(LOG_TAG, "handleReceivedMessage() message getMessageId => " + message.getMessageId());
         Log.d(LOG_TAG, "handleReceivedMessage() message getSenderId => " + message.getSenderId());
         Log.d(LOG_TAG, "handleReceivedMessage() message getMessageType => " + message.getMessageType());
+        Log.d(LOG_TAG, "handleReceivedMessage() message getNotification => " + message.getNotification());
         String from = message.getFrom();
         RemoteMessage.Notification remoteNotification = message.getNotification();
         final Bundle bundle = new Bundle();
         // Putting it from remoteNotification first so it can be overridden if message
         // data has it
         if (remoteNotification != null) {
-            Log.d(LOG_TAG, "remoteNotification: " + remoteNotification.toString());
-            Log.d(LOG_TAG, "remoteNotification body: " + remoteNotification.getBody());
-            Log.d(LOG_TAG, "remoteNotification title: " + remoteNotification.getTitle());
-            Log.d(LOG_TAG, "remoteNotification channelId: " + remoteNotification.getChannelId());
             // ^ It's null when message is from GCM
             RNPushNotificationConfig config = new RNPushNotificationConfig(mFirebaseMessagingService.getApplication());
 
@@ -131,50 +128,15 @@ public class RNReceivedMessageHandler {
         Bundle dataBundle = new Bundle();
         Map<String, String> notificationData = message.getData();
 
-        for (Map.Entry<String, String> entry : notificationData.entrySet()) {
-            Log.d(LOG_TAG, "Notification Data getKey: " + entry.getKey());
-            Log.d(LOG_TAG, "Notification Data getValue: " + entry.getValue());
+        for(Map.Entry<String, String> entry : notificationData.entrySet()) {
             dataBundle.putString(entry.getKey(), entry.getValue());
-            if (entry.getKey().equalsIgnoreCase("twi_body")) {
-                dataBundle.putString("message", entry.getValue());
-                bundle.putString("message", entry.getValue());
-            } else if (entry.getKey().equalsIgnoreCase("channel_title")) {
-                dataBundle.putString("title", entry.getValue());
-                bundle.putString("title", entry.getValue());
-                // title
-                bundle.putString("group", entry.getValue());
-            } else if (entry.getKey().equalsIgnoreCase("twi_sound")) {
-//                bundle.putString("sound", entry.getValue());
-                dataBundle.putString("sound", "default");
-                bundle.putString("sound", "default");
-//                bundle.putString("color", remoteNotification.getColor());
-            } else if (entry.getKey().equalsIgnoreCase("channel_id")) {
-                dataBundle.putString("tag", entry.getValue());
-                dataBundle.putString("channelId", entry.getValue());
-                bundle.putString("tag", entry.getValue());
-                bundle.putString("channelId", entry.getValue());
-                bundle.putString("channelSid", entry.getValue());
-
-//                bundle.putString("group", entry.getValue());
-                dataBundle.putString("channelSid", entry.getValue());
-            } else if (entry.getKey().equalsIgnoreCase("message_index")) {
-                dataBundle.putString("id", entry.getValue());
-                bundle.putString("id", entry.getValue());
-            } else if (entry.getKey().equalsIgnoreCase("message_id")) {
-                dataBundle.putString("messageSid", entry.getValue());
-                bundle.putString("messageSid", entry.getValue());
-            } else if (entry.getKey().equalsIgnoreCase("author")) {
-                bundle.putString("author", entry.getValue());
-            }
         }
-        bundle.putString("visibility", "public");
-        bundle.putString("priority", "high");
-        bundle.putBoolean("groupSummary", true);
-        bundle.putParcelable("data", dataBundle);
-        Log.d(LOG_TAG, "bundle: " + bundle);
-//        bundle.putInt("group", 0);
-//        Log.v(LOG_TAG, "onMessageReceived: " + bundle);
 
+        bundle.putParcelable("data", dataBundle);
+
+        Log.v(LOG_TAG, "dataBundle => " + dataBundle);
+        Log.v(LOG_TAG, "bundle     => " + dataBundle);
+        Log.v(LOG_TAG, "onMessageReceived: " + bundle);
         // We need to run this on the main thread, as the React code assumes that is true.
         // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
         // "Can't create handler inside thread that has not called Looper.prepare()"
@@ -208,82 +170,33 @@ public class RNReceivedMessageHandler {
 
     private void handleRemotePushNotification(ReactApplicationContext context, Bundle bundle) {
         Log.d(LOG_TAG, "handleRemotePushNotification()");
-        boolean showNotification = true;
-        String identity = "";
-        try {
-            SharedPreferences sharedPreferences = context.getSharedPreferences("dsp", Context.MODE_PRIVATE);
-            Map<String, String> map = (Map<String, String>) sharedPreferences.getAll();
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                Log.d(LOG_TAG, "SharedPreferences => Key = " + entry.getKey() + ", Value = " + entry.getValue());
-            }
-            Log.d(LOG_TAG, "activeChannel : " + map.get("activeChannel"));
-            Log.d(LOG_TAG, "channelSid : " + bundle.getString("channelSid"));
-            if (map.containsKey("activeChannel") && (map.get("activeChannel") != null) && map.get("activeChannel").equalsIgnoreCase(bundle.getString("channelSid"))) {
-                showNotification = false;
-            }
-            if (map.containsKey("identity") && (map.get("identity") != null)) {
-                identity = map.get("identity");
-            }
-            String message = bundle.getString("message");
-            Log.d(LOG_TAG, "message : " + message);
-            if (message.contains("system:")) {
-                message = message.replace("system: ", "workplace_bot: ");
-                Log.d(LOG_TAG, "message : " + message);
-                bundle.putString("message", message);
-            }
-
-            if (bundle.getString("title") != null && bundle.getString("title").contains(identity) && bundle.getString("author") != null) {
-                String title = bundle.getString("author");
-                message = message.replace(title + ": ", "");
-                if (title.contains("workplace_bot")) {
-                    title = "workplace_bot";
-                }
-                if(title.contains("system")){
-                    title = "workplace_bot";
-                    message = message.replace(title + ": ", "");
-                }
-                Log.d(LOG_TAG, "title : " + title);
-                Log.d(LOG_TAG, "message : " + message);
-                bundle.putString("title", title);
-                bundle.putString("message", message);
-            }
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "getSharedPreferences: " + e.getMessage());
-        }
-        Log.d(LOG_TAG, "bundle: " + bundle);
         // If notification ID is not provided by the user for push notification, generate one at random
         if (bundle.getString("id") == null) {
-            Log.d(LOG_TAG, "bundle.getString(id) is null");
             SecureRandom randomNumberGenerator = new SecureRandom();
             bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
-        } else {
-            Log.d(LOG_TAG, "bundle.getString(id) is not null");
         }
 
         Application applicationContext = (Application) context.getApplicationContext();
+
         RNPushNotificationConfig config = new RNPushNotificationConfig(mFirebaseMessagingService.getApplication());
         RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
+
         boolean isForeground = pushNotificationHelper.isApplicationInForeground();
+
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
         bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
-        Log.d(LOG_TAG, "bundle => " + bundle);
-        try {
-            if (showNotification) {
-                Log.v(LOG_TAG, "notifyNotification()");
-                jsDelivery.notifyNotification(bundle);
-                // If contentAvailable is set to true, then send out a remote fetch event
-                if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
-                    Log.d(LOG_TAG, "notifyRemoteFetch()");
-                    jsDelivery.notifyRemoteFetch(bundle);
-                }
-                if (config.getNotificationForeground() || !isForeground) {
-                    Log.d(LOG_TAG, "sendToNotificationCentre()");
-                    pushNotificationHelper.sendToNotificationCentre(bundle);
-                }
-            }
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Fail sending notification: " + e.getMessage());
+        jsDelivery.notifyNotification(bundle);
+
+        // If contentAvailable is set to true, then send out a remote fetch event
+        if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
+            jsDelivery.notifyRemoteFetch(bundle);
+        }
+
+        if (config.getNotificationForeground() || !isForeground) {
+            Log.v(LOG_TAG, "sendNotification: " + bundle);
+
+            pushNotificationHelper.sendToNotificationCentre(bundle);
         }
     }
 
@@ -291,7 +204,7 @@ public class RNReceivedMessageHandler {
         if (text != null) {
             return text;
         }
-//        Log.d(LOG_TAG, "getLocalizedString text: " + text);
+        Log.d(LOG_TAG, "getLocalizedString text: " + text);
         Context context = mFirebaseMessagingService.getApplicationContext();
         String packageName = context.getPackageName();
 
