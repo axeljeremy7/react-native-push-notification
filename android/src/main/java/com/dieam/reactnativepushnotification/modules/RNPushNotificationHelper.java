@@ -360,9 +360,9 @@ public class RNPushNotificationHelper {
 
             // Large icon
             if (largeIconBitmap == null) {
-                int largeIconResId = 0;
                 String largeIcon = bundle.getString("largeIcon");
-                Log.d(LOG_TAG, "#1 largeIcon => " + largeIcon);
+                Log.d(LOG_TAG, "largeIcon => " + largeIcon);
+                int largeIconResId = 0;
                 if (largeIcon != null && !largeIcon.isEmpty()) {
                     largeIconResId = res.getIdentifier(largeIcon, "drawable", packageName);
                     Log.d(LOG_TAG, "#1 largeIconResId => " + largeIconResId);
