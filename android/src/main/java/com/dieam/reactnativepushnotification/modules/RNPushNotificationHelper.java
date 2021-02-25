@@ -333,60 +333,46 @@ public class RNPushNotificationHelper {
             // Small icon
             int smallIconResId = 0;
             Log.d(LOG_TAG, "packageName     : " + packageName);
-            String smallIcon = bundle.getString("smallIcon");
-            Log.d(LOG_TAG, "smallIcon       : " + smallIcon);
-
+            String smallIcon = bundle.getString("smallIcon"); // name of file without extension
             if (smallIcon != null && !smallIcon.isEmpty()) {
                 smallIconResId = res.getIdentifier(smallIcon, "drawable", packageName);
-                Log.d(LOG_TAG, "#1  smallIconResId     : " + smallIconResId);
                 if (smallIconResId == 0) {
                     smallIconResId = res.getIdentifier(smallIcon, "mipmap", packageName);
-                    Log.d(LOG_TAG, "#1.1 smallIconResId     : " + smallIconResId);
                 }
             } else if (smallIcon == null) {
                 smallIconResId = res.getIdentifier("ic_notification", "mipmap", packageName);
-                Log.d(LOG_TAG, "#2  smallIconResId     : " + smallIconResId);
                 if (smallIconResId == 0) {
                     smallIconResId = res.getIdentifier("ic_notification", "drawable", packageName);
-                    Log.d(LOG_TAG, "#2.1  smallIconResId     : " + smallIconResId);
                 }
             }
 
             if (smallIconResId == 0) {
                 smallIconResId = res.getIdentifier("ic_launcher", "mipmap", packageName);
-                Log.d(LOG_TAG, "#3   smallIconResId     : " + smallIconResId);
                 if (smallIconResId == 0) {
                     smallIconResId = android.R.drawable.ic_dialog_info;
-                    Log.d(LOG_TAG, "#3.1   smallIconResId     : " + smallIconResId);
                 }
             }
-            Log.d(LOG_TAG, "smallIconResId => " + smallIconResId);
             notification.setSmallIcon(smallIconResId);
 
             // Large icon
             if (largeIconBitmap == null) {
-                String largeIcon = bundle.getString("largeIcon");
+                String largeIcon = bundle.getString("largeIcon");// icon  notification to the right
                 Log.d(LOG_TAG, "largeIcon => " + largeIcon);
                 int largeIconResId = 0;
                 if (largeIcon != null && !largeIcon.isEmpty()) {
                     largeIconResId = res.getIdentifier(largeIcon, "drawable", packageName);
-                    Log.d(LOG_TAG, "#1 largeIconResId => " + largeIconResId);
                     if (largeIconResId == 0) {
                         largeIconResId = res.getIdentifier(largeIcon, "mipmap", packageName);
-                        Log.d(LOG_TAG, "#1.1 largeIconResId => " + largeIconResId);
                     }
                 } else if (largeIcon == null) {
                     largeIconResId = res.getIdentifier("ic_launcher", "mipmap", packageName);
-                    Log.d(LOG_TAG, "#2 largeIconResId => " + largeIconResId);
                 }
-
                 // Before Lolipop there was no large icon for notifications.
                 if (largeIconResId != 0 && (largeIcon != null || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
                     largeIconBitmap = BitmapFactory.decodeResource(res, largeIconResId);
                 }
             }
 
-            Log.d(LOG_TAG, "largeIconBitmap => " + largeIconBitmap);
             if (largeIconBitmap != null) {
                 notification.setLargeIcon(largeIconBitmap);
             }
@@ -414,15 +400,11 @@ public class RNPushNotificationHelper {
                 // Big large icon
                 if (bigLargeIconBitmap == null) {
                     int bigLargeIconResId = 0;
-
                     String bigLargeIcon = bundle.getString("bigLargeIcon");
-                    Log.d(LOG_TAG, "bigLargeIcon => " + bigLargeIcon);
                     if (bigLargeIcon != null && !bigLargeIcon.isEmpty()) {
                         bigLargeIconResId = res.getIdentifier(bigLargeIcon, "mipmap", packageName);
-                        Log.d(LOG_TAG, "bigLargeIconResId => " + bigLargeIconResId);
                         if (bigLargeIconResId != 0) {
                             bigLargeIconBitmap = BitmapFactory.decodeResource(res, bigLargeIconResId);
-                            Log.d(LOG_TAG, "bigLargeIconResId => " + bigLargeIconResId);
                         }
                     }
                 }
