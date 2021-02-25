@@ -281,6 +281,10 @@ public class RNPushNotificationHelper {
             if (channel_id == null) {
                 channel_id = this.config.getNotificationDefaultChannelId();
             }
+            if (!channelExists(channel_id)) {
+                Log.d(LOG_TAG, "Creating new channel : " + channel_id);
+                createChannelInside(channel_id, title);
+            }
 
             Log.d(LOG_TAG, "channelId  : " + bundle.getString("channelId"));
             Log.d(LOG_TAG, "channel_id : " + channel_id);
@@ -879,9 +883,18 @@ public class RNPushNotificationHelper {
         return NotificationManager.IMPORTANCE_NONE == channel.getImportance();
     }
 
+    public boolean managerExist() {
+        NotificationManager manager = notificationManager();
+        if (manager == null)
+            return false;
+        return true;
+    }
+
     public boolean channelExists(String channel_id) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             return false;
+
+        if (!managerExist()) return false;
 
         NotificationManager manager = notificationManager();
 
@@ -952,7 +965,6 @@ public class RNPushNotificationHelper {
     public boolean createChannel(ReadableMap channelInfo) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             return false;
-
         String channelId = channelInfo.getString("channelId");
         String channelName = channelInfo.getString("channelName");
         String channelDescription = channelInfo.hasKey("channelDescription") ? channelInfo.getString("channelDescription") : "";
@@ -960,6 +972,23 @@ public class RNPushNotificationHelper {
         String soundName = channelInfo.hasKey("soundName") ? channelInfo.getString("soundName") : "default";
         int importance = channelInfo.hasKey("importance") ? channelInfo.getInt("importance") : 4;
         boolean vibrate = channelInfo.hasKey("vibrate") && channelInfo.getBoolean("vibrate");
+        long[] vibratePattern = vibrate ? new long[]{0, DEFAULT_VIBRATION} : null;
+
+        NotificationManager manager = notificationManager();
+
+        Uri soundUri = playSound ? getSoundUri(soundName) : null;
+
+        return checkOrCreateChannel(manager, channelId, channelName, channelDescription, soundUri, importance, vibratePattern);
+    }
+
+    private boolean createChannelInside(String channelId, String channelName) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            return false;
+        String channelDescription = "";
+        boolean playSound = true;
+        String soundName = "default";
+        int importance = 4;
+        boolean vibrate = false;
         long[] vibratePattern = vibrate ? new long[]{0, DEFAULT_VIBRATION} : null;
 
         NotificationManager manager = notificationManager();
