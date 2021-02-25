@@ -335,6 +335,7 @@ public class RNPushNotificationHelper {
             Log.d(LOG_TAG, "packageName     : " + packageName);
             String smallIcon = bundle.getString("smallIcon");
             Log.d(LOG_TAG, "smallIcon       : " + smallIcon);
+
             if (smallIcon != null && !smallIcon.isEmpty()) {
                 smallIconResId = res.getIdentifier(smallIcon, "drawable", packageName);
                 Log.d(LOG_TAG, "#1  smallIconResId     : " + smallIconResId);
@@ -345,6 +346,10 @@ public class RNPushNotificationHelper {
             } else if (smallIcon == null) {
                 smallIconResId = res.getIdentifier("ic_notification", "mipmap", packageName);
                 Log.d(LOG_TAG, "#2  smallIconResId     : " + smallIconResId);
+                if (smallIconResId == 0) {
+                    smallIconResId = res.getIdentifier("ic_notification", "drawable", packageName);
+                    Log.d(LOG_TAG, "#2.1  smallIconResId     : " + smallIconResId);
+                }
             }
 
             if (smallIconResId == 0) {
@@ -381,6 +386,7 @@ public class RNPushNotificationHelper {
                 }
             }
 
+            Log.d(LOG_TAG, "largeIconBitmap => " + largeIconBitmap);
             if (largeIconBitmap != null) {
                 notification.setLargeIcon(largeIconBitmap);
             }
